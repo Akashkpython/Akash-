@@ -1,0 +1,24 @@
+/* Basic global styles to ensure consistent typography and spacing */
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
+    Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', Arial,
+    sans-serif;
+  background-color: #0f0f0f;
+  color: #f2f2f2;
+}
+
+a {
+  color: #4dd0e1;
+}
+
+.container {
+  max-width: 1200px;
+}
+
+/* Utilities */
+.text-center { text-align: center; }
+.mt-2 { margin-top: 0.5rem; }
+.mt-3 { margin-top: 1rem; }
+.mt-4 { margin-top: 1.5rem; }
+
+

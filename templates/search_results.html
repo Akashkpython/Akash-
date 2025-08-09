@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+
+{% block title %}🔍 Search Results{% endblock %}
+
+{% block content %}
+
+<style>
+  .results-container {
+    max-width: 800px;
+    margin: 30px auto;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 10px;
+  }
+
+  .dark-mode .results-container {
+    background-color: #1e1e1e;
+    color: #f2f2f2;
+  }
+
+  .search-item {
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 16px;
+    background-color: #fff;
+    transition: box-shadow 0.2s ease;
+  }
+
+  .dark-mode .search-item {
+    background-color: #2a2a2a;
+    border-color: #444;
+  }
+
+  .search-item:hover {
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  }
+
+  .search-item h3 {
+    margin: 0 0 10px;
+    font-size: 18px;
+    color: #2874f0;
+  }
+
+  .search-item p {
+    margin: 4px 0;
+  }
+
+  .action-links {
+    margin-top: 8px;
+  }
+
+  .action-links a,
+  .action-links button {
+    font-size: 14px;
+    margin-right: 8px;
+    text-decoration: none;
+    color: #007bff;
+    background: none;
+    border: none;
+    cursor: pointer;
+  }
+
+  .action-links button:hover,
+  .action-links a:hover {
+    text-decoration: underline;
+  }
+
+  .dark-mode .action-links a,
+  .dark-mode .action-links button {
+    color: #4dd0e1;
+  }
+</style>
+
+<div class="results-container">
+  <h1>🔍 Search Results for "<em>{{ query }}</em>"</h1>
+
+{% if items %} <p>{{ items|length }} item(s) found.</p>
+{% for item in items %} <div class="search-item"> <h3>{{ item.name }}</h3> <p>Quantity: {{ item.quantity }} units</p> <p>Price: ₹{{ item.price }}</p> <div class="action-links"> <a href="{{ url_for('edit_item', item_id=item._id) }}">✏️ Edit</a> <form action="{{ url_for('delete_item', item_id=item._id) }}" method="POST" style="display:inline;"> <button type="submit" onclick="return confirm('Delete this item?')">🗑️ Delete</button> </form> </div> </div>
+{% endfor %}
+{% else %} <p>No items found for your search.</p>
+{% endif %}
+
+  <br>
+  <a href="{{ url_for('home') }}">← Back to Home</a>
+</div>
+{% endblock %}

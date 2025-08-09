@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block title %}📦 Manage Items{% endblock %}
+
+{% block content %}
+<div class="admin-items-container">
+  <h2>📦 Manage Grocery Items</h2>
+
+  <div class="add-button">
+    <a href="{{ url_for('add_item') }}">➕ Add New Item</a>
+  </div>
+
+  {% if items %}
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Price (₹)</th>
+        <th>Quantity</th>
+        <th>Category</th>
+        <th>Offer</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for item in items %}
+      <tr>
+        <td>{{ item.name }}</td>
+        <td>{{ item.price }}</td>
+        <td>{{ item.quantity }}</td>
+        <td>{{ item.category }}</td>
+        <td>{{ item.offer or 'None' }}</td>
+        <td class="actions">
+          <a class="edit-btn" href="{{ url_for('edit_item', item_id=item._id) }}">✏ Edit</a>
+          <form action="{{ url_for('delete_item', item_id=item._id) }}" method="POST" onsubmit="return confirm('Delete this item?');">
+            <button class="delete-btn" type="submit">🗑 Delete</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+    <p style="text-align:center;">No items available.</p>
+  {% endif %}
+</div>
+{% endblock %}

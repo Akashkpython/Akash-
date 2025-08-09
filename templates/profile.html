@@ -1,0 +1,157 @@
+{% extends 'base.html' %}
+
+{% block title %}👤 My Profile{% endblock %}
+
+{% block content %}
+<style>
+  .profile-container {
+    max-width: 800px;
+    margin: 30px auto;
+    background-color: #1f1f1f;
+    padding: 30px 20px;
+    border-radius: 12px;
+    color: #f2f2f2;
+    box-shadow: 0 0 12px rgba(0, 0, 0, 0.4);
+    font-family: 'Segoe UI', sans-serif;
+    box-sizing: border-box;
+    width: 100%;
+  }
+
+  .profile-container h1 {
+    text-align: center;
+    color: #4dd0e1;
+    margin-bottom: 25px;
+    font-size: 28px;
+  }
+
+  .profile-container p {
+    font-size: 16px;
+    margin-bottom: 10px;
+  }
+
+  .profile-container img {
+    display: block;
+    margin: 12px auto 20px;
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 3px solid #4dd0e1;
+  }
+
+  .profile-container form {
+    margin-top: 25px;
+    text-align: center;
+  }
+
+  .profile-container input[type="file"] {
+    margin: 10px 0;
+    padding: 6px;
+    color: #eee;
+    background-color: transparent;
+    border: none;
+  }
+
+  .profile-container button {
+    padding: 10px 20px;
+    background-color: #4caf50;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 15px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.2s ease;
+  }
+
+  .profile-container button:hover {
+    background-color: #43a047;
+  }
+
+  .flash-messages {
+    list-style: none;
+    padding: 0;
+    color: #ffc107;
+    margin-bottom: 15px;
+    text-align: center;
+    font-weight: bold;
+  }
+
+  .flash-messages li {
+    padding: 10px;
+    background-color: #333;
+    border-radius: 6px;
+    margin-bottom: 6px;
+  }
+
+  .profile-container a {
+    display: block;
+    text-align: center;
+    margin-top: 25px;
+    color: #4dd0e1;
+    text-decoration: none;
+    font-weight: bold;
+  }
+
+  .profile-container a:hover {
+    text-decoration: underline;
+  }
+
+  @media (max-width: 480px) {
+    .profile-container {
+      margin: 15px;
+      padding: 20px;
+    }
+
+    .profile-container h1 {
+      font-size: 22px;
+    }
+
+    .profile-container img {
+      width: 120px;
+      height: 120px;
+    }
+  }
+</style>
+
+<div class="profile-container">
+  <h1>👤 My Profile</h1>
+
+  {% with messages = get_flashed_messages() %}
+    {% if messages %}
+      <ul class="flash-messages">
+        {% for message in messages %}
+          <li>{{ message }}</li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+  {% endwith %}
+
+  <p><strong>Username:</strong> {{ user.username }}</p>
+
+  {% if user.profile_pic %}
+    <img src="{{ url_for('static', filename='uploads/' + user.profile_pic) }}" alt="Profile Picture">
+  {% else %}
+    <p style="text-align: center; font-style: italic; color: #aaa;">No profile picture uploaded.</p>
+  {% endif %}
+
+  <form method="POST" enctype="multipart/form-data">
+    <label for="profile_pic"><strong>Upload New Photo:</strong></label><br>
+    <input type="file" name="profile_pic" id="profile_pic" accept="image/*" required><br>
+    <button type="submit">📤 Upload</button>
+  </form>
+
+  <a href="{{ url_for('view_items') }}">← Back to Home</a>
+</div>
+
+<script>
+  document.getElementById('profile_pic').addEventListener('change', function(event) {
+    const preview = document.createElement('img');
+    preview.src = URL.createObjectURL(event.target.files[0]);
+    preview.style.width = '120px';
+    preview.style.marginTop = '10px';
+    this.parentNode.appendChild(preview);
+  });
+</script>
+
+{% endblock %}

@@ -1,0 +1,60 @@
+cd "D:\5th sem\project\Smart Grocery Shopping System"
+.\venv\Scripts\activate
+python app.py
+mongod
+http://127.0.0.1:5000
+
+
+Option A: View previous orders page
+Option B: Admin dashboard for viewing all user orders
+Option C: Email confirmation after placing order
+Option D: Item image upload and display
+Option E: Anything else (please specify)
+
+
+style
+base
+
+
+
+
+
+
+
+
+
+
+Ask ChatGPT
+
+
+
+
+
+
+
+
+SMART GROCERY SHOP
+
+Main Flask application
+app.py
+
+templates HTML files
+add_item.html
+admin_dashboard.html
+admin_orders.html
+base.html
+cart.html
+change_password.html
+checkout.html
+edit_item.html
+home.html
+login.html
+navbar.html
+orders.html
+profile.html
+search_results.html
+settings.html
+signup.html
+view_items.html
+
+

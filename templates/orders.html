@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% block title %}📦 My Orders{% endblock %}
+
+{% block content %}
+<h2 class="text-2xl font-bold mb-4">📦 My Orders</h2>
+
+{% if orders %}
+  {% for order in orders %}
+    <div class="border p-4 mb-6 rounded shadow bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100">
+      <p><strong>🆔 Order ID:</strong> {{ order._id }}</p>
+      <p><strong>📅 Date:</strong> {{ order.date }}</p>
+      <p><strong>📌 Status:</strong> {{ order.status or 'Pending' }}</p>
+
+      <p class="mt-2"><strong>🛍 Items:</strong></p>
+      <ul class="list-disc ml-6">
+        {% set total = 0 %}
+        {% for item in order['items'] %}
+          {% set item_total = (item.price | int) * (item.quantity | int) %}
+          {% set total = total + item_total %}
+          <li>{{ item.name }} — ₹{{ item.price }} × {{ item.quantity }} = ₹{{ item_total }}</li>
+        {% endfor %}
+      </ul>
+
+      <p class="mt-3 font-semibold text-lg">💰 Total: ₹{{ total }}</p>
+
+      {% if order.status != 'Cancelled' %}
+        <form action="{{ url_for('cancel_order', order_id=order._id) }}" method="POST" class="mt-3">
+          <button type="submit"
+                  onclick="return confirm('Are you sure you want to cancel this order?')"
+                  class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded">
+            ❌ Cancel Order
+          </button>
+        </form>
+      {% else %}
+        <p class="mt-2 text-red-500 font-semibold">This order has been cancelled.</p>
+      {% endif %}
+    </div>
+  {% endfor %}
+{% else %}
+  <p class="text-gray-500 dark:text-gray-400">No orders found.</p>
+{% endif %}
+{% endblock %}

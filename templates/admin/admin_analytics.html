@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+
+{% block title %}📈 Admin Analytics{% endblock %}
+
+{% block content %}
+
+<style>
+  .analytics-container {
+    max-width: 700px;
+    margin: 40px auto;
+    background-color: #1f1f1f;
+    padding: 30px;
+    border-radius: 10px;
+    color: #f2f2f2;
+    font-family: 'Segoe UI', sans-serif;
+    box-shadow: 0 0 12px rgba(0,0,0,0.3);
+  }
+
+  .analytics-container h1 {
+    text-align: center;
+    margin-bottom: 25px;
+    color: #4dd0e1;
+  }
+
+  .analytics-box {
+    background-color: #2c2c2c;
+    padding: 20px;
+    border-radius: 8px;
+    margin: 15px 0;
+    font-size: 18px;
+    font-weight: bold;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .analytics-box span {
+    color: #4caf50;
+  }
+
+  .back-link {
+    text-align: center;
+    margin-top: 20px;
+    display: block;
+    color: #4dd0e1;
+    text-decoration: none;
+  }
+
+  .back-link:hover {
+    text-decoration: underline;
+  }
+</style>
+
+<div class="analytics-container">
+  <h1>📊 Admin Analytics</h1>
+
+  <div class="analytics-box">
+    👥 Total Users <span>{{ total_users }}</span>
+  </div>
+  <div class="analytics-box">
+    📦 Total Items <span>{{ total_items }}</span>
+  </div>
+  <div class="analytics-box">
+    🧾 Total Orders <span>{{ total_orders }}</span>
+  </div>
+  <div class="analytics-box">
+    💰 Total Sales ₹<span>{{ total_sales }}</span>
+  </div>
+
+  <a href="{{ url_for('admin_dashboard') }}" class="back-link">← Back to Dashboard</a>
+</div>
+
+{% endblock %}

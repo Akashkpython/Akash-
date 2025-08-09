@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block title %}🔐 Login{% endblock %}
+
+{% block content %}
+<div style="max-width: 400px; margin: 50px auto; padding: 30px; background: #1f1f1f; color: white; border-radius: 12px; box-shadow: 0 0 10px rgba(0,0,0,0.3);">
+  <h2 style="text-align: center; margin-bottom: 20px;">🔒 Login</h2>
+  
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    {% for message in messages %}
+      <div style="background-color: #f44336; color: white; padding: 10px; margin-bottom: 15px; border-radius: 5px;">
+        {{ message }}
+      </div>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
+
+  <form method="POST">
+    <label for="username">👤 Username:</label>
+    <input type="text" name="username" class="form-control" required style="width: 100%; padding: 10px; margin-bottom: 15px; border-radius: 6px; border: none;">
+
+    <label for="password">🔑 Password:</label>
+    <input type="password" name="password" class="form-control" required style="width: 100%; padding: 10px; margin-bottom: 20px; border-radius: 6px; border: none;">
+
+    <button type="submit" class="btn btn-primary" style="width: 100%; padding: 10px; background-color: #00b894; color: white; border: none; border-radius: 6px;">✅ Login</button>
+  </form>
+
+  <p style="text-align: center; margin-top: 15px;">
+    Don't have an account? <a href="{{ url_for('item_routes.signup') }}">📝 Sign up here</a>
+  </p>
+</div>
+{% endblock %}

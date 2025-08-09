@@ -1,0 +1,22 @@
+<div class="navbar">
+  {% if session.get('user') %}
+    <a href="{{ url_for('view_items') }}">Home</a>
+    <a href="{{ url_for('view_cart') }}">Cart</a>
+    <a href="{{ url_for('checkout') }}">Checkout</a>
+    <a href="{{ url_for('view_orders') }}">Orders</a>
+    <a href="{{ url_for('settings') }}">Settings</a>
+    <a href="{{ url_for('profile') }}">Profile</a>
+
+    {% if session.get('role') == 'admin' %}
+      <a href="{{ url_for('admin_dashboard') }}">Dashboard</a>
+      <a href="{{ url_for('view_all_orders') }}">All Orders</a>
+      <a href="{{ url_for('view_users') }}">Manage Users</a>
+    {% endif %}
+
+    <a href="{{ url_for('logout') }}">Logout</a>
+  {% else %}
+    <a href="{{ url_for('item_routes.login') }}">Login</a>
+    <a href="{{ url_for('item_routes.signup') }}">Sign Up</a>
+  {% endif %}
+</div>
+<hr>

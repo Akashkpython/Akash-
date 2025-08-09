@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+
+{% block title %}👑 Admin Dashboard{% endblock %}
+
+{% block content %}
+
+<style>
+  .dashboard-container {
+    max-width: 800px;
+    margin: 40px auto;
+    background-color: #1e1e1e;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 0 12px rgba(0, 0, 0, 0.4);
+    color: #f0f0f0;
+    font-family: 'Segoe UI', sans-serif;
+  }
+
+  .dashboard-container h2 {
+    text-align: center;
+    color: #4dd0e1;
+    margin-bottom: 25px;
+    font-size: 28px;
+  }
+
+  .summary-cards {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 25px;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .summary-cards .card {
+    flex: 1 1 30%;
+    background: #2c2c2c;
+    padding: 14px;
+    border-radius: 8px;
+    text-align: center;
+    font-weight: bold;
+    color: #fbc02d;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    font-size: 16px;
+  }
+
+  .dashboard-links {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    text-align: center;
+  }
+
+  .dashboard-links li {
+    margin: 15px 0;
+  }
+
+  .dashboard-links a {
+    display: inline-block;
+    text-decoration: none;
+    font-size: 18px;
+    padding: 12px 24px;
+    color: #fff;
+    background-color: #2874f0;
+    border-radius: 6px;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    font-weight: bold;
+  }
+
+  .dashboard-links a:hover {
+    background-color: #1f5fca;
+    transform: scale(1.03);
+  }
+
+  @media (max-width: 480px) {
+    .summary-cards {
+      flex-direction: column;
+    }
+
+    .dashboard-links a {
+      width: 100%;
+      box-sizing: border-box;
+    }
+  }
+</style>
+
+<div class="dashboard-container">
+  <h2>👑 Welcome, Admin {{ session['user'] }}</h2>
+
+  <!-- Summary Cards (Optional) -->
+  <div class="summary-cards">
+    <div class="card">👥 Users: {{ total_users }}</div>
+    <div class="card">📦 Items: {{ total_items }}</div>
+    <div class="card">🧾 Orders: {{ total_orders }}</div>
+  </div>
+
+  <ul class="dashboard-links">
+    <li><a href="{{ url_for('manage_items') }}">📦 Manage Items</a></li>
+    <li><a href="{{ url_for('view_users') }}">👥 View Users</a></li>
+    <li><a href="{{ url_for('admin_analytics') }}">📈 Analytics</a></li>
+    <li><a href="{{ url_for('view_all_orders') }}">📊 All Orders</a></li>
+    <li><a href="{{ url_for('view_orders') }}">🧾 My Orders</a></li>
+    <li><a href="{{ url_for('logout') }}">🚪 Logout</a></li>
+  </ul>
+</div>
+
+{% endblock %}

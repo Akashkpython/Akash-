@@ -1,0 +1,150 @@
+{% extends "base.html" %}
+{% block title %}🧾 Invoice{% endblock %}
+{% block content %}
+
+<style>
+  .invoice-container {
+    background-color: #1f1f1f;
+    color: #f2f2f2;
+    padding: 30px;
+    border-radius: 12px;
+    max-width: 800px;
+    margin: 40px auto;
+    box-shadow: 0 0 12px rgba(0, 0, 0, 0.3);
+    font-family: 'Segoe UI', sans-serif;
+  }
+
+  .invoice-header {
+    text-align: center;
+    margin-bottom: 30px;
+  }
+
+  .invoice-header h1 {
+    color: #4dd0e1;
+    font-size: 28px;
+  }
+
+  .invoice-details {
+    margin-bottom: 20px;
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  .invoice-details strong {
+    color: #fbc02d;
+  }
+
+  .invoice-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+  }
+
+  .invoice-table th,
+  .invoice-table td {
+    border-bottom: 1px solid #444;
+    padding: 12px;
+    text-align: left;
+  }
+
+  .invoice-table th {
+    background-color: #333;
+    color: #fff;
+  }
+
+  .invoice-total {
+    text-align: right;
+    font-size: 18px;
+    font-weight: bold;
+    color: #76ff03;
+    margin-top: 20px;
+  }
+
+  .download-btn {
+    display: inline-block;
+    background-color: #4caf50;
+    color: white;
+    padding: 12px 20px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: bold;
+    margin-top: 30px;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+  }
+
+  .download-btn:hover {
+    background-color: #43a047;
+    transform: scale(1.03);
+  }
+
+  .back-link {
+    display: block;
+    text-align: center;
+    margin-top: 20px;
+    font-size: 15px;
+    color: #4dd0e1;
+    text-decoration: none;
+    font-weight: bold;
+  }
+
+  .back-link:hover {
+    text-decoration: underline;
+  }
+
+  @media (max-width: 600px) {
+    .invoice-container {
+      padding: 20px;
+    }
+
+    .invoice-table th, .invoice-table td {
+      font-size: 14px;
+    }
+
+    .invoice-total {
+      font-size: 16px;
+    }
+  }
+</style>
+
+<div class="invoice-container">
+  <div class="invoice-header">
+    <h1>🧾 Invoice</h1>
+    <p>Thank you for your order!</p>
+  </div>
+
+  <div class="invoice-details">
+    <p><strong>Order ID:</strong> {{ order.id }}</p>
+    <p><strong>Date:</strong> {{ order.date }}</p>
+    <p><strong>Customer:</strong> {{ order.customer_name }}</p>
+    <p><strong>Address:</strong> {{ order.address }}</p>
+  </div>
+
+  <table class="invoice-table">
+    <thead>
+      <tr>
+        <th>Item</th>
+        <th>Qty</th>
+        <th>Price (₹)</th>
+        <th>Subtotal (₹)</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for item in order.items %}
+      <tr>
+        <td>{{ item.name }}</td>
+        <td>{{ item.quantity }}</td>
+        <td>{{ item.price }}</td>
+        <td>{{ item.price * item.quantity }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <div class="invoice-total">Total: ₹{{ order.total }}</div>
+
+<a href="{{ url_for('download_invoice', order_id=order.id) }}" class="download-btn">⬇️ Download Invoice</a> <a href="{{ url_for('home') }}" class="back-link">← Back to Home</a>
+
+</div>
+
+{% endblock %}
+

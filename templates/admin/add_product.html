@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block title %}➕ Add Product{% endblock %}
+
+{% block content %}
+<div class="add-product-container">
+  <form method="POST" enctype="multipart/form-data" class="add-product-form">
+    <h2>➕ Add New Product</h2>
+
+    <input type="text" name="name" placeholder="Product Name" required>
+
+    <input type="number" step="0.01" name="price" placeholder="Price (₹)" required>
+
+    <input type="number" name="stock" placeholder="Stock Quantity" required>
+
+    <textarea name="description" placeholder="Description (optional)"></textarea>
+
+    <input type="text" name="offer" placeholder="Offer (e.g. 10% OFF)">
+
+    <select name="category" required>
+      <option value="">Select Category</option>
+      <option value="fruits">🍎 Fruits</option>
+      <option value="vegetables">🥦 Vegetables</option>
+      <option value="snacks">🍪 Snacks</option>
+      <option value="beverages">🧃 Beverages</option>
+    </select>
+
+    <label class="image-label">📷 Upload Product Image</label>
+    <input type="file" name="image" accept="image/*" required>
+
+    <button type="submit" class="submit-btn">Add Product</button>
+  </form>
+</div>
+{% endblock %}

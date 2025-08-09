@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+
+{% block title %}📦 All Orders (Admin){% endblock %}
+
+{% block content %}
+<style>
+  .admin-orders-container {
+    max-width: 1000px;
+    margin: 40px auto;
+    padding: 20px;
+    font-family: 'Segoe UI', sans-serif;
+  }
+
+  .admin-orders-title {
+    text-align: center;
+    font-size: 28px;
+    font-weight: bold;
+    color: #4dd0e1;
+    margin-bottom: 30px;
+  }
+
+  .order-card {
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(10px);
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 24px;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.3);
+    color: #f0f0f0;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .order-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+  }
+
+  .order-header {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 12px;
+    color: #ffca28;
+  }
+
+  .order-items {
+    margin-left: 20px;
+    color: #ccc;
+    list-style-type: disc;
+    padding-left: 10px;
+    margin-bottom: 12px;
+  }
+
+  .order-items li {
+    margin-bottom: 6px;
+    font-size: 15px;
+  }
+
+  .order-total {
+    text-align: right;
+    font-size: 16px;
+    font-weight: bold;
+    color: #76ff03;
+  }
+
+  .no-orders {
+    text-align: center;
+    color: #aaa;
+    font-size: 18px;
+    margin-top: 60px;
+  }
+
+  @media (max-width: 600px) {
+    .order-card {
+      padding: 18px;
+    }
+
+    .admin-orders-title {
+      font-size: 24px;
+    }
+
+    .order-header {
+      font-size: 16px;
+    }
+
+    .order-total {
+      font-size: 15px;
+    }
+  }
+</style>
+
+<div class="admin-orders-container">
+  <h1 class="admin-orders-title">📦 All Orders (Admin View)</h1>
+
+  {% if orders %}
+    {% for order in orders %}
+      <div class="order-card">
+        <div class="order-header">👤 User: {{ order.username }}</div>
+        <ul class="order-items">
+          {% set ns = namespace(total=0) %}
+          {% for item in order.get("items", []) %}
+            {% set subtotal = (item.price | float) * (item.quantity | int) %}
+            {% set ns.total = ns.total + subtotal %}
+            <li>{{ item.name }} – ₹{{ item.price }} × {{ item.quantity }} = ₹{{ subtotal }}</li>
+          {% endfor %}
+        </ul>
+        <div class="order-total">Total: ₹{{ ns.total }}</div>
+      </div>
+    {% endfor %}
+  {% else %}
+    <p class="no-orders">🚫 No orders have been placed yet.</p>
+  {% endif %}
+</div>
+{% endblock %}

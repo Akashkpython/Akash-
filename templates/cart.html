@@ -1,0 +1,153 @@
+{% extends "base.html" %}
+
+{% block title %}🛒 Your Cart{% endblock %}
+
+{% block content %}
+<div class="cart-container">
+  <h1>🛒 Your Cart</h1>
+
+  {% if cart_items %}
+    <div class="cart-table-wrapper">
+      <table class="cart-table">
+        <thead>
+          <tr>
+            <th>Item</th>
+            <th>Price (₹)</th>
+            <th>Quantity</th>
+            <th>Subtotal</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in cart_items %}
+          <tr>
+            <td>{{ item.name }}</td>
+            <td>₹{{ item.price }}</td>
+            <td>{{ item.quantity }}</td>
+            <td>₹{{ (item.price | float) * (item.quantity | int) }}</td>
+            <td>
+              <form action="{{ url_for('remove_from_cart', item_id=item.item_id) }}" method="POST">
+                <button type="submit" class="remove-button">❌ Remove</button>
+              </form>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+
+      <div class="cart-total">
+        <strong>🧮 Total: ₹{{ total }}</strong>
+      </div>
+
+      <div class="cart-actions">
+        <a href="{{ url_for('checkout') }}" class="checkout-button">🧾 Proceed to Checkout</a>
+      </div>
+    </div>
+  {% else %}
+    <p style="margin-top: 20px;">Your cart is empty. 😢</p>
+  {% endif %}
+</div>
+
+<style>
+.cart-container {
+  max-width: 1000px;
+  margin: 40px auto;
+  padding: 20px;
+  background: #1e1e1e;
+  color: #f0f0f0;
+  border-radius: 12px;
+  box-shadow: 0 0 12px rgba(0,0,0,0.4);
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.cart-container h1 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #4dd0e1;
+}
+
+.cart-table-wrapper {
+  overflow-x: auto;
+}
+
+.cart-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+.cart-table th,
+.cart-table td {
+  padding: 12px;
+  text-align: center;
+  border-bottom: 1px solid #444;
+}
+
+.cart-table th {
+  background-color: #333;
+  color: #fff;
+}
+
+.cart-table td {
+  color: #eee;
+}
+
+.remove-button {
+  background-color: #e74c3c;
+  color: white;
+  padding: 6px 12px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.remove-button:hover {
+  background-color: #c0392b;
+}
+
+.cart-total {
+  text-align: right;
+  font-size: 18px;
+  margin-top: 20px;
+  color: #00e676;
+}
+
+.cart-actions {
+  text-align: right;
+  margin-top: 20px;
+}
+
+.checkout-button {
+  background-color: #27ae60;
+  color: white;
+  padding: 10px 20px;
+  text-decoration: none;
+  border-radius: 6px;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+}
+
+.checkout-button:hover {
+  background-color: #219150;
+}
+
+@media (max-width: 600px) {
+  .cart-table th,
+  .cart-table td {
+    font-size: 14px;
+    padding: 8px;
+  }
+
+  .checkout-button {
+    width: 100%;
+    text-align: center;
+  }
+
+  .cart-total,
+  .cart-actions {
+    text-align: center;
+  }
+}
+</style>
+{% endblock %}

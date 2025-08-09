@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block title %}🚫 Page Not Found{% endblock %}
+
+{% block content %}
+<style>
+  .notfound-container {
+    max-width: 600px;
+    margin: 80px auto;
+    padding: 30px;
+    background-color: #1e1e1e;
+    color: #f0f0f0;
+    border-radius: 12px;
+    text-align: center;
+    box-shadow: 0 0 12px rgba(0,0,0,0.3);
+    font-family: 'Segoe UI', sans-serif;
+  }
+
+  .notfound-container h2 {
+    font-size: 28px;
+    margin-bottom: 15px;
+    color: #ff5252;
+  }
+
+  .notfound-container p {
+    font-size: 16px;
+    margin-bottom: 25px;
+  }
+
+  .notfound-container a {
+    color: #4dd0e1;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 15px;
+  }
+
+  .notfound-container a:hover {
+    text-decoration: underline;
+  }
+</style>
+
+<div class="notfound-container">
+  <h2>🚫 404 - Page Not Found</h2>
+  <p>Sorry, the page you are looking for does not exist.</p>
+  <a href="{{ url_for('home') }}">← Go back to Home</a>
+</div>
+{% endblock %}

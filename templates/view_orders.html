@@ -1,0 +1,138 @@
+{% extends 'base.html' %}
+{% block title %}📦 My Orders{% endblock %}
+
+{% block content %}
+<style>
+  .orders-container {
+    max-width: 1100px;
+    margin: 40px auto;
+    padding: 0 20px;
+    font-family: 'Segoe UI', sans-serif;
+  }
+
+  .orders-title {
+    font-size: 28px;
+    font-weight: bold;
+    text-align: center;
+    color: #4dd0e1;
+    margin-bottom: 30px;
+  }
+
+  .order-card {
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(12px);
+    border-radius: 14px;
+    padding: 24px;
+    margin-bottom: 25px;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.3);
+    color: #f0f0f0;
+    transition: transform 0.2s ease;
+  }
+
+  .order-card:hover {
+    transform: scale(1.01);
+  }
+
+  .order-card p,
+  .order-card li {
+    margin-bottom: 8px;
+    font-size: 15px;
+  }
+
+  .order-items {
+    margin-left: 20px;
+    list-style-type: disc;
+  }
+
+  .order-total {
+    font-size: 18px;
+    font-weight: bold;
+    color: #76ff03;
+    margin-top: 12px;
+  }
+
+  .cancel-button {
+    margin-top: 14px;
+    background: #e53935;
+    color: white;
+    padding: 10px 18px;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+  }
+
+  .cancel-button:hover {
+    background: #c62828;
+  }
+
+  .cancelled-text {
+    margin-top: 10px;
+    color: #ff6b6b;
+    font-weight: bold;
+    font-size: 15px;
+  }
+
+  .no-orders {
+    text-align: center;
+    font-size: 16px;
+    color: #bbb;
+    margin-top: 40px;
+  }
+
+  @media (max-width: 600px) {
+    .order-card {
+      padding: 18px;
+    }
+
+    .orders-title {
+      font-size: 24px;
+    }
+
+    .order-total {
+      font-size: 16px;
+    }
+  }
+</style>
+
+<div class="orders-container">
+  <h2 class="orders-title">📦 My Orders</h2>
+
+  {% if orders %}
+    {% for order in orders %}
+      <div class="order-card">
+        <p><strong>🆔 Order ID:</strong> {{ order._id }}</p>
+        <p><strong>📅 Date:</strong> {{ order.date }}</p>
+        <p><strong>📌 Status:</strong> {{ order.status or 'Pending' }}</p>
+
+        <p><strong>🛍 Items:</strong></p>
+        <ul class="order-items">
+          {% set total = 0 %}
+          {% for item in order['items'] %}
+            {% set item_total = (item.price | int) * (item.quantity | int) %}
+            {% set total = total + item_total %}
+            <li>{{ item.name }} — ₹{{ item.price }} × {{ item.quantity }} = ₹{{ item_total }}</li>
+          {% endfor %}
+        </ul>
+
+        <p class="order-total">💰 Total: ₹{{ total }}</p>
+
+        {% if order.status != 'Cancelled' %}
+          <form action="{{ url_for('cancel_order', order_id=order._id) }}" method="POST">
+            <button type="submit" class="cancel-button"
+                    onclick="return confirm('Are you sure you want to cancel this order?')">
+              ❌ Cancel Order
+            </button>
+          </form>
+        {% else %}
+          <p class="cancelled-text">❌ This order has been cancelled.</p>
+        {% endif %}
+      </div>
+    {% endfor %}
+  {% else %}
+    <p class="no-orders">You have no orders yet.</p>
+  {% endif %}
+</div>
+{% endblock %}
