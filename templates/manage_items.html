@@ -69,6 +69,12 @@
 
 <div class="manage-container">
   <h2 class="manage-title">🛠 Manage Grocery Items</h2>
+  
+  <div style="text-align: center; margin-bottom: 30px;">
+    <a href="{{ url_for('add_product') }}" class="btn btn-accent" style="padding: 12px 24px; font-size: 16px; text-decoration: none; border-radius: 8px; background-color: #4dd0e1; color: #000; font-weight: bold;">
+      ➕ Add New Product
+    </a>
+  </div>
 
   {% if items %}
     {% for item in items %}

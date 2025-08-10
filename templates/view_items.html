@@ -1,236 +1,74 @@
 {% extends 'base.html' %}
-{% block title %}🛒 Grocery Items{% endblock %}
+{% block title %}Grocery Items{% endblock %}
 
 {% block content %}
-<div class="view-items-container">
-  <!-- 🔍 Search + Filter -->
-  <div class="search-filter-section">
-    <div class="top-bar">
-      <h2>🛒 Smart Grocery</h2>
-      <form method="GET" action="{{ url_for('view_items') }}" class="search-form">
-        <input id="searchInput" type="text" name="search" placeholder="Search groceries..." value="{{ request.args.get('search', '') }}">
-        <button type="submit">🔍</button>
-        <button type="button" onclick="startVoiceSearch()">🎤</button>
-        <select name="category">
-          <option value="all" {% if request.args.get('category') == 'all' %}selected{% endif %}>🔄 Show All</option>
-          <option value="fruits" {% if request.args.get('category') == 'fruits' %}selected{% endif %}>🍎 Fruits</option>
-          <option value="vegetables" {% if request.args.get('category') == 'vegetables' %}selected{% endif %}>🥦 Vegetables</option>
-          <option value="snacks" {% if request.args.get('category') == 'snacks' %}selected{% endif %}>🍪 Snacks</option>
-          <option value="beverages" {% if request.args.get('category') == 'beverages' %}selected{% endif %}>🧃 Beverages</option>
-        </select>
-      </form>
+<div class="view-items-container-full">
+  <!-- Categories -->
+  <div class="full-bleed" style="background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px);">
+    <div class="chip-band">
+      <div class="chip-row">
+        <a href="{{ url_for('view_items', category='fruits') }}" class="category-chip" style="--animation-index: 0;"><i class="fa-solid fa-apple-whole"></i> Fruits</a>
+        <a href="{{ url_for('view_items', category='vegetables') }}" class="category-chip" style="--animation-index: 1;"><i class="fa-solid fa-carrot"></i> Vegetables</a>
+        <a href="{{ url_for('view_items', category='beverages') }}" class="category-chip" style="--animation-index: 2;"><i class="fa-solid fa-bottle-water"></i> Beverages</a>
+        <a href="{{ url_for('view_items', category='snacks') }}" class="category-chip" style="--animation-index: 3;"><i class="fa-solid fa-cookie-bite"></i> Snacks</a>
+      </div>
     </div>
   </div>
 
-  <!-- 🛍 Items Grid -->
-  <h3 class="section-title">🛍 Available Grocery Items</h3>
-  <div class="product-grid">
+  <!-- Items Grid -->
+  <div class="full-bleed py-2" style="background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px);">
+    <div class="px-3 px-md-4">
+      <h1 class="headline-xl text-center headline-animated" style="margin-bottom:10px;">
+        <span class="headline-accent">Available</span> <span style="color: var(--text-dark);">Grocery Items</span>
+      </h1>
+    </div>
+  </div>
+  <div class="product-grid full-bleed px-3 px-md-4">
     {% for item in items %}
     <div class="product-card">
-      <img src="{{ url_for('static', filename='uploads/' ~ item.image) }}" alt="{{ item.name }}">
-      <div class="product-info">
-        <h4>{{ item.name }}</h4>
-        <p class="price">₹{{ item.price }}</p>
-        <p class="desc">{{ item.description or 'No description available.' }}</p>
-        <p class="offers">🔥 Offers: {{ item.offer or 'None' }}</p>
-        <p class="stock">Stock: {{ item.stock or item.quantity }}</p>
+      <div class="img-wrap">
+        {% if item.image %}
+          <img src="{{ url_for('static', filename='uploads/' ~ item.image) }}" alt="{{ item.name }}" loading="lazy">
+        {% else %}
+          <img src="{{ url_for('static', filename='images/default.jpg') }}" alt="Default product image" loading="lazy">
+        {% endif %}
       </div>
-      <div class="product-actions">
-        <form action="{{ url_for('add_to_cart', item_id=item._id) }}" method="POST">
+      <div class="content">
+        <div class="title">{{ item.name }}</div>
+        <div class="price">₹{{ item.price }}</div>
+        <div class="text-muted">{{ item.description or 'No description available.' }}</div>
+        {% if item.offer and item.offer != 'None' %}
+          <div class="text-muted" style="color: var(--warning); font-weight: 600;">
+            <i class="fa-solid fa-fire"></i> {{ item.offer }}
+          </div>
+        {% endif %}
+        <div class="text-muted" style="font-size: 0.8rem;">
+          <i class="fa-solid fa-boxes-stacked"></i> Stock: {{ item.stock or item.quantity }}
+        </div>
+      </div>
+      <div class="actions">
+        <form action="{{ url_for('add_to_cart', item_id=item._id) }}" method="POST" style="flex: 1;">
           <input type="hidden" name="quantity" value="1">
-          <button type="submit" class="add-cart-btn">🛒 Add to Cart</button>
+          <button type="submit" class="btn btn-cart" aria-label="Add {{ item.name }} to cart">
+            <i class="fa-solid fa-cart-plus"></i> Add to Cart
+          </button>
         </form>
-        <form action="{{ url_for('buy_now', item_id=item._id) }}" method="POST">
-          <button type="submit" class="buy-now-btn">⚡ Buy Now</button>
-        </form>
+        {% if session.get('user') %}
+          <form action="{{ url_for('buy_now_page', item_id=item._id) }}" method="POST" style="flex: 1;">
+            <button type="submit" class="btn btn-buy" aria-label="Buy {{ item.name }} now">
+              <i class="fa-solid fa-bolt"></i> Buy Now
+            </button>
+          </form>
+        {% else %}
+          <a href="{{ url_for('item_routes.login') }}" class="btn btn-buy" style="flex: 1; display: flex; align-items: center; justify-content: center;" aria-label="Login to buy {{ item.name }}">
+            <i class="fa-solid fa-bolt"></i> Buy Now
+          </a>
+        {% endif %}
       </div>
     </div>
     {% endfor %}
   </div>
 </div>
 
-<style>
-.view-items-container {
-  background-color: #1e1e1e;
-  color: #f0f0f0;
-  padding: 20px;
-  border-radius: 10px;
-}
 
-.search-filter-section {
-  background-color: #2b2b2b;
-  padding: 20px;
-  border-radius: 10px;
-  margin-bottom: 20px;
-}
-
-.top-bar {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  align-items: center;
-  gap: 10px;
-}
-
-.top-bar h2 {
-  margin: 0;
-  color: #4dd0e1;
-  font-size: 22px;
-}
-
-.search-form {
-  display: flex;
-  gap: 10px;
-  flex-grow: 1;
-  max-width: 600px;
-  margin-top: 10px;
-}
-
-.search-form input,
-.search-form select {
-  padding: 10px;
-  border-radius: 6px;
-  border: none;
-  background-color: #f9f9f9;
-  color: #000;
-  flex: 1;
-}
-
-.search-form button {
-  padding: 10px 16px;
-  background-color: #4dd0e1;
-  border: none;
-  border-radius: 6px;
-  font-weight: bold;
-  cursor: pointer;
-}
-
-.section-title {
-  margin: 20px 0;
-  font-size: 22px;
-  color: #ffffff;
-}
-
-.product-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 20px;
-}
-
-.product-card {
-  background-color: #2c2c2c;
-  border-radius: 10px;
-  overflow: hidden;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.3);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.product-card:hover {
-  transform: scale(1.02);
-  box-shadow: 0 4px 16px rgba(0,0,0,0.5);
-}
-
-.product-card img {
-  width: 100%;
-  height: 180px;
-  object-fit: cover;
-}
-
-.product-info {
-  padding: 12px 16px;
-}
-
-.product-info h4 {
-  margin: 0 0 6px;
-  font-size: 18px;
-  color: #ffffff;
-}
-
-.product-info .price {
-  color: #00e676;
-  font-weight: bold;
-  margin-bottom: 4px;
-}
-
-.product-info .desc,
-.product-info .offers,
-.product-info .stock {
-  font-size: 13px;
-  margin: 2px 0;
-  color: #ccc;
-}
-
-.product-actions {
-  display: flex;
-  gap: 10px;
-  padding: 12px;
-  border-top: 1px solid #444;
-  justify-content: center;
-  background-color: #1a1a1a;
-}
-
-.product-actions button {
-  flex: 1 1 48%;
-  min-width: 120px;
-  padding: 10px;
-  font-size: 15px;
-  border-radius: 8px;
-  font-weight: bold;
-  border: none;
-  cursor: pointer;
-  transition: transform 0.2s, background-color 0.2s ease;
-}
-
-.product-actions .add-cart-btn {
-  background-color: #ffc107;
-  color: #000;
-}
-
-.product-actions .buy-now-btn {
-  background-color: #28a745;
-  color: white;
-}
-
-.product-actions .add-cart-btn:hover {
-  background-color: #e0a800;
-  transform: scale(1.03);
-}
-
-.product-actions .buy-now-btn:hover {
-  background-color: #218838;
-  transform: scale(1.03);
-}
-
-@media (max-width: 500px) {
-  .search-form {
-    flex-direction: column;
-  }
-
-  .product-actions button {
-    flex: 1 1 100%;
-    margin-bottom: 6px;
-  }
-}
-</style>
-
-<script>
-function startVoiceSearch() {
-    const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-    recognition.lang = 'en-IN';
-    recognition.interimResults = false;
-    recognition.maxAlternatives = 1;
-
-    recognition.start();
-
-    recognition.onresult = function(event) {
-        const transcript = event.results[0][0].transcript;
-        document.getElementById('searchInput').value = transcript;
-        document.querySelector('.search-form').submit();
-    };
-
-    recognition.onerror = function(event) {
-        alert('🎤 Voice recognition error: ' + event.error);
-    };
-}
-</script>
 {% endblock %}

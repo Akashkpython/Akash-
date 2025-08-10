@@ -4,149 +4,256 @@
 
 {% block content %}
 <div class="cart-container">
-  <h1>🛒 Your Cart</h1>
+  <div class="cart-header">
+    <h1 class="headline-xl text-center headline-accent">
+      <i class="fa-solid fa-shopping-cart"></i> Your Cart
+    </h1>
+  </div>
 
   {% if cart_items %}
-    <div class="cart-table-wrapper">
-      <table class="cart-table">
-        <thead>
-          <tr>
-            <th>Item</th>
-            <th>Price (₹)</th>
-            <th>Quantity</th>
-            <th>Subtotal</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for item in cart_items %}
-          <tr>
-            <td>{{ item.name }}</td>
-            <td>₹{{ item.price }}</td>
-            <td>{{ item.quantity }}</td>
-            <td>₹{{ (item.price | float) * (item.quantity | int) }}</td>
-            <td>
-              <form action="{{ url_for('remove_from_cart', item_id=item.item_id) }}" method="POST">
-                <button type="submit" class="remove-button">❌ Remove</button>
-              </form>
-            </td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-
-      <div class="cart-total">
-        <strong>🧮 Total: ₹{{ total }}</strong>
+    <div class="cart-content card-surface">
+      <div class="cart-table-wrapper">
+        <table class="cart-table">
+          <thead>
+            <tr>
+              <th><i class="fa-solid fa-box"></i> Item</th>
+              <th><i class="fa-solid fa-tag"></i> Price</th>
+              <th><i class="fa-solid fa-hashtag"></i> Quantity</th>
+              <th><i class="fa-solid fa-calculator"></i> Subtotal</th>
+              <th><i class="fa-solid fa-cog"></i> Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for item in cart_items %}
+            <tr class="cart-row">
+              <td class="item-name">{{ item.name }}</td>
+              <td class="item-price">₹{{ item.price }}</td>
+              <td class="item-quantity">{{ item.quantity }}</td>
+              <td class="item-subtotal">₹{{ (item.price | float) * (item.quantity | int) }}</td>
+              <td class="item-action">
+                <form action="{{ url_for('remove_from_cart', item_id=item.item_id) }}" method="POST">
+                  <button type="submit" class="btn btn-danger" aria-label="Remove {{ item.name }} from cart">
+                    <i class="fa-solid fa-trash"></i> Remove
+                  </button>
+                </form>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
       </div>
 
-      <div class="cart-actions">
-        <a href="{{ url_for('checkout') }}" class="checkout-button">🧾 Proceed to Checkout</a>
+      <div class="cart-summary">
+        <div class="cart-total">
+          <span class="total-label">Total Amount:</span>
+          <span class="total-amount">₹{{ total }}</span>
+        </div>
+
+        <div class="cart-actions">
+          <a href="{{ url_for('checkout') }}" class="btn btn-accent">
+            <i class="fa-solid fa-credit-card"></i> Proceed to Checkout
+          </a>
+        </div>
       </div>
     </div>
   {% else %}
-    <p style="margin-top: 20px;">Your cart is empty. 😢</p>
+    <div class="empty-cart card-surface">
+      <div class="empty-cart-content">
+        <i class="fa-solid fa-shopping-basket"></i>
+        <h3>Your cart is empty</h3>
+        <p>Start shopping to add items to your cart!</p>
+        <a href="{{ url_for('view_items') }}" class="btn btn-accent">
+          <i class="fa-solid fa-store"></i> Browse Products
+        </a>
+      </div>
+    </div>
   {% endif %}
 </div>
 
 <style>
 .cart-container {
-  max-width: 1000px;
+  max-width: 1200px;
   margin: 40px auto;
   padding: 20px;
-  background: #1e1e1e;
-  color: #f0f0f0;
-  border-radius: 12px;
-  box-shadow: 0 0 12px rgba(0,0,0,0.4);
-  font-family: 'Segoe UI', sans-serif;
 }
 
-.cart-container h1 {
-  text-align: center;
-  margin-bottom: 20px;
-  color: #4dd0e1;
+.cart-header {
+  margin-bottom: 30px;
+}
+
+.cart-content {
+  padding: 30px;
 }
 
 .cart-table-wrapper {
   overflow-x: auto;
+  margin-bottom: 30px;
 }
 
 .cart-table {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 10px;
-}
-
-.cart-table th,
-.cart-table td {
-  padding: 12px;
-  text-align: center;
-  border-bottom: 1px solid #444;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
 }
 
 .cart-table th {
-  background-color: #333;
-  color: #fff;
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text-light);
+  font-weight: 600;
+  padding: 20px 15px;
+  text-align: left;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .cart-table td {
-  color: #eee;
+  padding: 20px 15px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text-light);
+  font-size: 0.95rem;
 }
 
-.remove-button {
-  background-color: #e74c3c;
-  color: white;
-  padding: 6px 12px;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
+.cart-row:hover {
+  background: rgba(255, 255, 255, 0.05);
+  transition: background var(--transition-normal);
 }
 
-.remove-button:hover {
-  background-color: #c0392b;
+.item-name {
+  font-weight: 600;
+  color: var(--text-light);
+}
+
+.item-price {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.item-quantity {
+  text-align: center;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-sm);
+  padding: 5px 10px;
+  display: inline-block;
+  min-width: 40px;
+}
+
+.item-subtotal {
+  color: var(--success);
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.item-action {
+  text-align: center;
+}
+
+.cart-summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 30px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  flex-wrap: wrap;
+  gap: 20px;
 }
 
 .cart-total {
-  text-align: right;
-  font-size: 18px;
-  margin-top: 20px;
-  color: #00e676;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.total-label {
+  font-size: 1.1rem;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.total-amount {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--success);
+  background: rgba(34, 197, 94, 0.1);
+  padding: 10px 20px;
+  border-radius: var(--radius-lg);
+  border: 1px solid rgba(34, 197, 94, 0.2);
 }
 
 .cart-actions {
-  text-align: right;
-  margin-top: 20px;
+  display: flex;
+  gap: 15px;
 }
 
-.checkout-button {
-  background-color: #27ae60;
-  color: white;
-  padding: 10px 20px;
-  text-decoration: none;
-  border-radius: 6px;
-  font-weight: bold;
-  transition: background-color 0.3s ease;
+.empty-cart {
+  text-align: center;
+  padding: 60px 30px;
 }
 
-.checkout-button:hover {
-  background-color: #219150;
+.empty-cart-content i {
+  font-size: 4rem;
+  color: var(--text-muted);
+  margin-bottom: 20px;
 }
 
-@media (max-width: 600px) {
+.empty-cart-content h3 {
+  font-size: 1.5rem;
+  color: var(--text-light);
+  margin-bottom: 10px;
+  font-weight: 600;
+}
+
+.empty-cart-content p {
+  color: var(--text-muted);
+  margin-bottom: 30px;
+  font-size: 1.1rem;
+}
+
+@media (max-width: 768px) {
+  .cart-container {
+    padding: 10px;
+  }
+  
+  .cart-content {
+    padding: 20px;
+  }
+  
   .cart-table th,
   .cart-table td {
-    font-size: 14px;
-    padding: 8px;
+    padding: 15px 10px;
+    font-size: 0.85rem;
   }
-
-  .checkout-button {
-    width: 100%;
+  
+  .cart-summary {
+    flex-direction: column;
     text-align: center;
   }
+  
+  .cart-total {
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .total-amount {
+    font-size: 1.3rem;
+  }
+}
 
-  .cart-total,
-  .cart-actions {
-    text-align: center;
+@media (max-width: 480px) {
+  .cart-table {
+    font-size: 0.8rem;
+  }
+  
+  .cart-table th,
+  .cart-table td {
+    padding: 10px 5px;
+  }
+  
+  .item-action .btn {
+    padding: 8px 12px;
+    font-size: 0.8rem;
   }
 }
 </style>

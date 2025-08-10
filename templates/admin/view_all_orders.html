@@ -85,6 +85,11 @@
           {% endfor %}
         </ul>
         <div class="order-total">Total: ₹{{ ns.total }}</div>
+        <div style="margin-top:8px;">
+          <form action="{{ url_for('cancel_order', order_id=order._id) }}" method="POST">
+            <button type="submit" class="btn btn-sm btn-warning">Cancel</button>
+          </form>
+        </div>
       </div>
     {% endfor %}
   {% else %}

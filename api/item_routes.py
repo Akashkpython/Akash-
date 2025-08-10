@@ -86,6 +86,26 @@ def get_items():
         item['_id'] = str(item['_id'])  # Convert ObjectId to string
     return jsonify(items)
 
+@item_routes.route('/api/items/<item_id>', methods=['GET'])
+def get_item(item_id):
+    try:
+        item = items_collection.find_one({'_id': ObjectId(item_id)})
+    except Exception:
+        return jsonify({'error': 'Invalid item ID'}), 400
+    if not item:
+        return jsonify({'error': 'Item not found'}), 404
+    item['_id'] = str(item['_id'])
+    return jsonify(item), 200
+
+@item_routes.route('/api/search_suggestions', methods=['GET'])
+def search_suggestions():
+    query = request.args.get('q', '').strip()
+    if not query:
+        return jsonify([])
+    results = items_collection.find({'name': {'$regex': query, '$options': 'i'}}, {'name': 1}).limit(10)
+    suggestions = [{'_id': str(doc['_id']), 'name': doc.get('name', '')} for doc in results]
+    return jsonify(suggestions)
+
 @item_routes.route('/api/items', methods=['POST'])
 def add_item():
     data = request.json

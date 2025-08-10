@@ -135,7 +135,7 @@
   }
 </style>
 
-<div class="checkout-container">
+  <div class="checkout-container card-surface shadow">
   <h1>🧾 Checkout</h1>
 
   {% if items %}
@@ -160,7 +160,7 @@
       {% endfor %}
       <p><strong>Total:</strong> ₹{{ total }}</p>
 
-      <button type="submit" class="checkout-button">✅ Place Order</button>
+      <button type="submit" class="checkout-button btn btn-accent">✅ Place Order</button>
     </form>
   {% else %}
     <div class="empty-cart">🛒 Your cart is empty ❌</div>

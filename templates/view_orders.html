@@ -2,137 +2,339 @@
 {% block title %}📦 My Orders{% endblock %}
 
 {% block content %}
-<style>
-  .orders-container {
-    max-width: 1100px;
-    margin: 40px auto;
-    padding: 0 20px;
-    font-family: 'Segoe UI', sans-serif;
-  }
-
-  .orders-title {
-    font-size: 28px;
-    font-weight: bold;
-    text-align: center;
-    color: #4dd0e1;
-    margin-bottom: 30px;
-  }
-
-  .order-card {
-    background: rgba(255, 255, 255, 0.03);
-    backdrop-filter: blur(12px);
-    border-radius: 14px;
-    padding: 24px;
-    margin-bottom: 25px;
-    box-shadow: 0 6px 16px rgba(0,0,0,0.3);
-    color: #f0f0f0;
-    transition: transform 0.2s ease;
-  }
-
-  .order-card:hover {
-    transform: scale(1.01);
-  }
-
-  .order-card p,
-  .order-card li {
-    margin-bottom: 8px;
-    font-size: 15px;
-  }
-
-  .order-items {
-    margin-left: 20px;
-    list-style-type: disc;
-  }
-
-  .order-total {
-    font-size: 18px;
-    font-weight: bold;
-    color: #76ff03;
-    margin-top: 12px;
-  }
-
-  .cancel-button {
-    margin-top: 14px;
-    background: #e53935;
-    color: white;
-    padding: 10px 18px;
-    border: none;
-    border-radius: 8px;
-    font-weight: bold;
-    font-size: 14px;
-    cursor: pointer;
-    transition: background 0.2s ease;
-  }
-
-  .cancel-button:hover {
-    background: #c62828;
-  }
-
-  .cancelled-text {
-    margin-top: 10px;
-    color: #ff6b6b;
-    font-weight: bold;
-    font-size: 15px;
-  }
-
-  .no-orders {
-    text-align: center;
-    font-size: 16px;
-    color: #bbb;
-    margin-top: 40px;
-  }
-
-  @media (max-width: 600px) {
-    .order-card {
-      padding: 18px;
-    }
-
-    .orders-title {
-      font-size: 24px;
-    }
-
-    .order-total {
-      font-size: 16px;
-    }
-  }
-</style>
-
 <div class="orders-container">
-  <h2 class="orders-title">📦 My Orders</h2>
+  <div class="orders-header">
+    <h1 class="headline-xl text-center headline-accent">
+      <i class="fa-solid fa-receipt"></i> My Orders
+    </h1>
+  </div>
 
   {% if orders %}
-    {% for order in orders %}
-      <div class="order-card">
-        <p><strong>🆔 Order ID:</strong> {{ order._id }}</p>
-        <p><strong>📅 Date:</strong> {{ order.date }}</p>
-        <p><strong>📌 Status:</strong> {{ order.status or 'Pending' }}</p>
+    <div class="orders-grid">
+      {% for order in orders %}
+        <div class="order-card card-surface">
+          <div class="order-header">
+            <div class="order-id">
+              <i class="fa-solid fa-hashtag"></i>
+              <span>{{ order._id }}</span>
+            </div>
+            <div class="order-status {{ order.status or 'pending' }}">
+              <i class="fa-solid fa-circle"></i>
+              <span>{{ order.status or 'Pending' }}</span>
+            </div>
+          </div>
 
-        <p><strong>🛍 Items:</strong></p>
-        <ul class="order-items">
-          {% set total = 0 %}
-          {% for item in order['items'] %}
-            {% set item_total = (item.price | int) * (item.quantity | int) %}
-            {% set total = total + item_total %}
-            <li>{{ item.name }} — ₹{{ item.price }} × {{ item.quantity }} = ₹{{ item_total }}</li>
-          {% endfor %}
-        </ul>
+          <div class="order-details">
+            <div class="order-date">
+              <i class="fa-solid fa-calendar"></i>
+              <span>{{ order.date }}</span>
+            </div>
+          </div>
 
-        <p class="order-total">💰 Total: ₹{{ total }}</p>
+          <div class="order-items">
+            <h4><i class="fa-solid fa-shopping-bag"></i> Items Ordered:</h4>
+            <div class="items-list">
+              {% set total = 0 %}
+              {% for item in order['items'] %}
+                {% set item_total = (item.price | int) * (item.quantity | int) %}
+                {% set total = total + item_total %}
+                <div class="item-row">
+                  <span class="item-name">{{ item.name }}</span>
+                  <span class="item-details">
+                    ₹{{ item.price }} × {{ item.quantity }}
+                  </span>
+                  <span class="item-total">₹{{ item_total }}</span>
+                </div>
+              {% endfor %}
+            </div>
+          </div>
 
-        {% if order.status != 'Cancelled' %}
-          <form action="{{ url_for('cancel_order', order_id=order._id) }}" method="POST">
-            <button type="submit" class="cancel-button"
-                    onclick="return confirm('Are you sure you want to cancel this order?')">
-              ❌ Cancel Order
-            </button>
-          </form>
-        {% else %}
-          <p class="cancelled-text">❌ This order has been cancelled.</p>
-        {% endif %}
-      </div>
-    {% endfor %}
+          <div class="order-footer">
+            <div class="order-total">
+              <span class="total-label">Total Amount:</span>
+              <span class="total-amount">₹{{ total }}</span>
+            </div>
+
+            {% if order.status != 'Cancelled' %}
+              <form action="{{ url_for('cancel_order', order_id=order._id) }}" method="POST" class="cancel-form">
+                <button type="submit" class="btn btn-danger" 
+                        onclick="return confirm('Are you sure you want to cancel this order?')">
+                  <i class="fa-solid fa-times"></i> Cancel Order
+                </button>
+              </form>
+            {% else %}
+              <div class="cancelled-badge">
+                <i class="fa-solid fa-ban"></i> Cancelled
+              </div>
+            {% endif %}
+          </div>
+        </div>
+      {% endfor %}
+    </div>
   {% else %}
-    <p class="no-orders">You have no orders yet.</p>
+    <div class="empty-orders card-surface">
+      <div class="empty-orders-content">
+        <i class="fa-solid fa-inbox"></i>
+        <h3>No orders yet</h3>
+        <p>Start shopping to see your order history here!</p>
+        <a href="{{ url_for('view_items') }}" class="btn btn-accent">
+          <i class="fa-solid fa-store"></i> Start Shopping
+        </a>
+      </div>
+    </div>
   {% endif %}
 </div>
+
+<style>
+.orders-container {
+  max-width: 1200px;
+  margin: 40px auto;
+  padding: 20px;
+}
+
+.orders-header {
+  margin-bottom: 40px;
+}
+
+.orders-grid {
+  display: grid;
+  gap: 25px;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+}
+
+.order-card {
+  padding: 25px;
+  transition: transform var(--transition-normal);
+}
+
+.order-card:hover {
+  transform: translateY(-4px);
+}
+
+.order-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.order-id {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  color: var(--text-light);
+  font-size: 0.9rem;
+}
+
+.order-status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: var(--radius-lg);
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.order-status.pending {
+  background: rgba(245, 158, 11, 0.2);
+  color: var(--warning);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+.order-status.delivered {
+  background: rgba(34, 197, 94, 0.2);
+  color: var(--success);
+  border: 1px solid rgba(34, 197, 94, 0.3);
+}
+
+.order-status.cancelled {
+  background: rgba(239, 68, 68, 0.2);
+  color: var(--danger);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.order-details {
+  margin-bottom: 20px;
+}
+
+.order-date {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+.order-items h4 {
+  color: var(--text-light);
+  font-size: 1rem;
+  margin-bottom: 15px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.items-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.item-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 15px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.item-name {
+  font-weight: 600;
+  color: var(--text-light);
+  flex: 1;
+}
+
+.item-details {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  margin: 0 15px;
+}
+
+.item-total {
+  color: var(--accent);
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.order-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 25px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.order-total {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.total-label {
+  color: var(--text-muted);
+  font-size: 1rem;
+}
+
+.total-amount {
+  color: var(--success);
+  font-weight: 700;
+  font-size: 1.3rem;
+  background: rgba(34, 197, 94, 0.1);
+  padding: 8px 16px;
+  border-radius: var(--radius-lg);
+  border: 1px solid rgba(34, 197, 94, 0.2);
+}
+
+.cancel-form {
+  margin: 0;
+}
+
+.cancelled-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--danger);
+  font-weight: 600;
+  font-size: 0.9rem;
+  padding: 8px 16px;
+  background: rgba(239, 68, 68, 0.1);
+  border-radius: var(--radius-lg);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+.empty-orders {
+  text-align: center;
+  padding: 80px 30px;
+}
+
+.empty-orders-content i {
+  font-size: 4rem;
+  color: var(--text-muted);
+  margin-bottom: 20px;
+}
+
+.empty-orders-content h3 {
+  font-size: 1.5rem;
+  color: var(--text-light);
+  margin-bottom: 10px;
+  font-weight: 600;
+}
+
+.empty-orders-content p {
+  color: var(--text-muted);
+  margin-bottom: 30px;
+  font-size: 1.1rem;
+}
+
+@media (max-width: 768px) {
+  .orders-container {
+    padding: 10px;
+  }
+  
+  .orders-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  
+  .order-card {
+    padding: 20px;
+  }
+  
+  .order-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  
+  .order-footer {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .item-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  
+  .item-details {
+    margin: 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .order-card {
+    padding: 15px;
+  }
+  
+  .item-row {
+    padding: 10px;
+  }
+  
+  .total-amount {
+    font-size: 1.1rem;
+  }
+}
+</style>
 {% endblock %}

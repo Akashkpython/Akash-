@@ -1,0 +1,50 @@
+<nav class="navbar navbar-expand-lg sticky-top shadow-sm" style="background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(255, 255, 255, 0.2);">
+  <div class="container-fluid">
+    <a class="navbar-brand fw-bold" href="/" style="color: var(--primary);">
+      <i class="fa-solid fa-basket-shopping"></i> Smart Grocery
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav me-auto">
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('home') }}" style="color: var(--text-dark);">Home</a></li>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="categoriesDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="color: var(--text-dark);">
+            Categories
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="categoriesDropdown">
+            <li><a class="dropdown-item" href="{{ url_for('view_items', category='fruits') }}"><i class="fa-solid fa-apple-whole me-2"></i>Fruits</a></li>
+            <li><a class="dropdown-item" href="{{ url_for('view_items', category='vegetables') }}"><i class="fa-solid fa-carrot me-2"></i>Vegetables</a></li>
+            <li><a class="dropdown-item" href="{{ url_for('view_items', category='beverages') }}"><i class="fa-solid fa-bottle-water me-2"></i>Beverages</a></li>
+            <li><a class="dropdown-item" href="{{ url_for('view_items', category='snacks') }}"><i class="fa-solid fa-cookie-bite me-2"></i>Snacks</a></li>
+          </ul>
+        </li>
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('view_items') }}" style="color: var(--text-dark);">Shop</a></li>
+      </ul>
+      <form class="d-flex position-relative" action="{{ url_for('view_items') }}" method="GET" style="max-width: 420px; width: 100%;">
+        <input class="form-control me-2" id="globalSearchInput" type="search" name="search" placeholder="Search groceries..." autocomplete="off">
+        <button class="btn btn-outline-info" type="submit"><i class="fa-solid fa-magnifying-glass"></i></button>
+        <button class="btn btn-outline-secondary ms-2" type="button" id="voiceSearchBtn"><i class="fa-solid fa-microphone"></i></button>
+        <div id="searchSuggestions" class="list-group position-absolute w-100" style="top: 100%; z-index: 1080;"></div>
+      </form>
+      <button class="btn btn-accent ms-3 d-none d-md-inline-flex align-items-center" data-bs-toggle="modal" data-bs-target="#aiAssistantModal">
+        <i class="fa-solid fa-robot me-2"></i> AI Assistant
+      </button>
+      <ul class="navbar-nav ms-3">
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('view_cart') }}" style="color: var(--text-dark);"><i class="fa-solid fa-cart-shopping"></i> Cart</a></li>
+        {% if session.get('user') %}
+          <li class="nav-item"><a class="nav-link" href="{{ url_for('view_orders') }}" style="color: var(--text-dark);"><i class="fa-solid fa-receipt"></i> Orders</a></li>
+          <li class="nav-item"><a class="nav-link" href="{{ url_for('settings') }}" style="color: var(--text-dark);"><i class="fa-solid fa-gear"></i> Settings</a></li>
+          {% if session.get('role') == 'admin' %}
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('admin_dashboard') }}" style="color: var(--text-dark);"><i class="fa-solid fa-gauge"></i> Admin</a></li>
+          {% endif %}
+          <li class="nav-item"><a class="nav-link" href="{{ url_for('logout') }}" style="color: var(--text-dark);"><i class="fa-solid fa-right-from-bracket"></i> Logout</a></li>
+        {% else %}
+          <li class="nav-item"><a class="nav-link" href="{{ url_for('item_routes.login') }}" style="color: var(--text-dark);"><i class="fa-solid fa-right-to-bracket"></i> Login</a></li>
+        {% endif %}
+      </ul>
+    </div>
+  </div>
+</nav>
+

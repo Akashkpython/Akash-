@@ -2,199 +2,354 @@
 {% block title %}⚙️ Settings{% endblock %}
 
 {% block content %}
+<div class="settings-container">
+  <div class="settings-header">
+    <h1 class="headline-xl text-center headline-accent">
+      <i class="fa-solid fa-gear"></i> Settings
+    </h1>
+  </div>
+
+  <div class="settings-content card-surface">
+    <div class="settings-section">
+      <h3><i class="fa-solid fa-palette"></i> Appearance</h3>
+      <form method="post" action="{{ url_for('toggle_dark_mode') }}" class="settings-form">
+        <button type="submit" class="btn btn-accent">
+          {% if session.get('dark_mode') %}
+            <i class="fa-solid fa-sun"></i> Switch to Light Mode
+          {% else %}
+            <i class="fa-solid fa-moon"></i> Switch to Dark Mode
+          {% endif %}
+        </button>
+      </form>
+    </div>
+
+    <div class="settings-section">
+      <h3><i class="fa-solid fa-user-shield"></i> Account Security</h3>
+      <div class="settings-actions">
+        <form method="get" action="{{ url_for('change_password') }}" class="settings-form">
+          <button type="submit" class="btn btn-accent">
+            <i class="fa-solid fa-key"></i> Change Password
+          </button>
+        </form>
+        <form method="get" action="{{ url_for('profile') }}" class="settings-form">
+          <button type="submit" class="btn btn-accent">
+            <i class="fa-solid fa-user-edit"></i> Update Profile
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="developers-section">
+    <h2 class="headline-xl text-center headline-accent">
+      <i class="fa-solid fa-users"></i> Meet Our Developers
+    </h2>
+    
+    <div class="developers-grid">
+      <div class="developer-card card-surface">
+        <div class="developer-avatar">
+          <img src="{{ url_for('static', filename='profiles/akash.jpg') }}" alt="Akash K Kothari">
+        </div>
+        <div class="developer-info">
+          <h4 class="developer-name">Akash K Kothari</h4>
+          <p class="developer-role">Lead Developer – UI/UX & Backend</p>
+          <div class="developer-skills">
+            <span class="skill-tag">Flask</span>
+            <span class="skill-tag">MongoDB</span>
+            <span class="skill-tag">UI/UX</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="developer-card card-surface">
+        <div class="developer-avatar">
+          <img src="{{ url_for('static', filename='profiles/shiv.jpg') }}" alt="Shiv Kumar">
+        </div>
+        <div class="developer-info">
+          <h4 class="developer-name">Shiv Kumar</h4>
+          <p class="developer-role">UI Design & Frontend</p>
+          <div class="developer-skills">
+            <span class="skill-tag">HTML/CSS</span>
+            <span class="skill-tag">JavaScript</span>
+            <span class="skill-tag">Design</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="developer-card card-surface">
+        <div class="developer-avatar">
+          <img src="{{ url_for('static', filename='profiles/rithish.jpg') }}" alt="Rithish Mogaveer">
+        </div>
+        <div class="developer-info">
+          <h4 class="developer-name">Rithish Mogaveer</h4>
+          <p class="developer-role">Data Handling & Search</p>
+          <div class="developer-skills">
+            <span class="skill-tag">Data</span>
+            <span class="skill-tag">Search</span>
+            <span class="skill-tag">API</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="developer-card card-surface">
+        <div class="developer-avatar">
+          <img src="{{ url_for('static', filename='profiles/lakshmisha.jpg') }}" alt="Lakshmisha">
+        </div>
+        <div class="developer-info">
+          <h4 class="developer-name">Lakshmisha</h4>
+          <p class="developer-role">Deployment & Testing</p>
+          <div class="developer-skills">
+            <span class="skill-tag">Testing</span>
+            <span class="skill-tag">Deployment</span>
+            <span class="skill-tag">DevOps</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="site-footer card-surface">
+    <div class="footer-content">
+      <div class="footer-section">
+        <h4><i class="fa-solid fa-shopping-basket"></i> About Smart Grocery</h4>
+        <p>Smart Grocery is your trusted platform for fresh groceries and essentials. Built by passionate students for real-world use.</p>
+      </div>
+      
+      <div class="footer-section">
+        <h4><i class="fa-solid fa-file-contract"></i> Terms & Conditions</h4>
+        <ul>
+          <li>Items subject to availability.</li>
+          <li>Prices are final during checkout.</li>
+          <li>Delivery limited to service area.</li>
+          <li>Login security is user's responsibility.</li>
+          <li>Cancel orders within 10 minutes.</li>
+        </ul>
+      </div>
+      
+      <div class="footer-section">
+        <h4><i class="fa-solid fa-info-circle"></i> More Info</h4>
+        <ul>
+          <li>Team: Akash & Developers</li>
+          <li>Built with Flask, MongoDB</li>
+          <li>Version 1.0.0</li>
+          <li>Email: smartgrocery@example.com</li>
+        </ul>
+      </div>
+    </div>
+    
+    <div class="footer-bottom">
+      <p>© {{ current_year }} Smart Grocery. All Rights Reserved.</p>
+    </div>
+  </footer>
+</div>
 
 <style>
+.settings-container {
+  max-width: 1200px;
+  margin: 40px auto;
+  padding: 20px;
+}
+
+.settings-header {
+  margin-bottom: 40px;
+}
+
+.settings-content {
+  padding: 30px;
+  margin-bottom: 40px;
+}
+
+.settings-section {
+  margin-bottom: 30px;
+}
+
+.settings-section:last-child {
+  margin-bottom: 0;
+}
+
+.settings-section h3 {
+  color: var(--text-light);
+  font-size: 1.2rem;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 600;
+}
+
+.settings-actions {
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+.settings-form {
+  margin: 0;
+}
+
+.developers-section {
+  margin-bottom: 40px;
+}
+
+.developers-section h2 {
+  margin-bottom: 30px;
+}
+
+.developers-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 25px;
+}
+
+.developer-card {
+  padding: 25px;
+  text-align: center;
+  transition: transform var(--transition-normal);
+}
+
+.developer-card:hover {
+  transform: translateY(-4px);
+}
+
+.developer-avatar {
+  margin-bottom: 20px;
+}
+
+.developer-avatar img {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid rgba(255, 255, 255, 0.2);
+  transition: border-color var(--transition-normal);
+}
+
+.developer-card:hover .developer-avatar img {
+  border-color: var(--primary);
+}
+
+.developer-name {
+  color: var(--text-light);
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.developer-role {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  margin-bottom: 15px;
+}
+
+.developer-skills {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.skill-tag {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text-light);
+  padding: 4px 12px;
+  border-radius: var(--radius-lg);
+  font-size: 0.8rem;
+  font-weight: 500;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.site-footer {
+  padding: 40px 30px 20px;
+}
+
+.footer-content {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 30px;
+  margin-bottom: 30px;
+}
+
+.footer-section h4 {
+  color: var(--text-light);
+  font-size: 1.1rem;
+  margin-bottom: 15px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+}
+
+.footer-section p {
+  color: var(--text-muted);
+  line-height: 1.6;
+  margin-bottom: 0;
+}
+
+.footer-section ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.footer-section li {
+  color: var(--text-muted);
+  margin-bottom: 8px;
+  padding-left: 0;
+  position: relative;
+}
+
+.footer-section li:before {
+  content: '•';
+  color: var(--primary);
+  font-weight: bold;
+  margin-right: 8px;
+}
+
+.footer-bottom {
+  text-align: center;
+  padding-top: 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+@media (max-width: 768px) {
   .settings-container {
-    background-color: #f9f9f9;
-    padding: 25px;
-    border-radius: 10px;
-    max-width: 500px;
-    margin: 0 auto;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    transition: background-color 0.3s, color 0.3s;
-    text-align: center;
+    padding: 10px;
   }
-
-  .dark-mode .settings-container {
-    background-color: #1e1e1e;
-    color: white;
-    box-shadow: 0 2px 8px rgba(255,255,255,0.1);
-  }
-
-  .settings-container h2 {
-    margin-bottom: 25px;
-    font-size: 24px;
-  }
-
-  .settings-container form {
-    margin-bottom: 15px;
-  }
-
-  .settings-container button {
-    background-color: #2874f0;
-    color: white;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 16px;
-    transition: background-color 0.2s ease;
-    width: 100%;
-    max-width: 300px;
-  }
-
-  .settings-container button:hover {
-    background-color: #1451aa;
-  }
-
-  .developer-cards {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 20px;
+  
+  .settings-content {
     padding: 20px;
   }
+  
+  .settings-actions {
+    flex-direction: column;
+  }
+  
+  .developers-grid {
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+  }
+  
+  .footer-content {
+    grid-template-columns: 1fr;
+    gap: 25px;
+  }
+}
 
+@media (max-width: 480px) {
   .developer-card {
-    width: 220px;
-    text-align: center;
-    border: 1px solid #ccc;
-    border-radius: 10px;
-    padding: 15px;
-    box-shadow: 2px 2px 6px rgba(0,0,0,0.1);
-    background-color: #fff;
-    transition: transform 0.2s ease;
+    padding: 20px;
   }
-
-  .developer-card:hover {
-    transform: translateY(-5px);
+  
+  .developer-avatar img {
+    width: 80px;
+    height: 80px;
   }
-
-  .dark-mode .developer-card {
-    background-color: #2a2a2a;
-    border-color: #555;
-    color: white;
+  
+  .site-footer {
+    padding: 30px 20px 15px;
   }
-
-  .developer-card img {
-    width: 100px;
-    height: 100px;
-    border-radius: 50%;
-    object-fit: cover;
-    margin-bottom: 10px;
-  }
-
-  .developer-card .name {
-    font-weight: bold;
-    margin: 10px 0 6px;
-    font-size: 18px;
-  }
-
-  .developer-card .role {
-    font-size: 14px;
-    color: #666;
-  }
-
-  .dark-mode .developer-card .role {
-    color: #bbb;
-  }
-
-  h3 {
-    margin-top: 40px;
-    text-align: center;
-  }
-
-  footer {
-    text-align: center;
-    font-size: small;
-    padding: 10px;
-    background-color: #f0f0f0;
-    color: #333;
-    margin-top: 30px;
-  }
-
-  .dark-mode footer {
-    background-color: #1e1e1e;
-    color: #ccc;
-  }
+}
 </style>
-
-<div class="settings-container">
-  <h2>⚙️ Settings</h2>
-
-  <form method="post" action="{{ url_for('toggle_dark_mode') }}">
-    <button type="submit">
-      {% if session.get('dark_mode') %}
-        ☀️ Switch to Light Mode
-      {% else %}
-        🌙 Switch to Dark Mode
-      {% endif %}
-    </button>
-  </form>
-
-  <form method="get" action="{{ url_for('change_password') }}">
-    <button type="submit">🔑 Change Password</button>
-  </form>
-
-  <form method="get" action="{{ url_for('profile') }}">
-    <button type="submit">👤 Update Profile</button>
-  </form>
-</div>
-
-<h3>💻 Meet Our Developers</h3>
-<div class="developer-cards">
-  <div class="developer-card">
-    <img src="{{ url_for('static', filename='profiles/akash.jpg') }}" alt="Akash K Kothari">
-    <div class="name">Akash K Kothari</div>
-    <div class="role">Lead Developer – UI/UX & Backend</div>
-  </div>
-
-  <div class="developer-card">
-    <img src="{{ url_for('static', filename='profiles/shiv.jpg') }}" alt="Shiv Kumar">
-    <div class="name">Shiv Kumar</div>
-    <div class="role">UI Design & Frontend</div>
-  </div>
-
-  <div class="developer-card">
-    <img src="{{ url_for('static', filename='profiles/rithish.jpg') }}" alt="Rithish Mogaveer">
-    <div class="name">Rithish Mogaveer</div>
-    <div class="role">Data Handling & Search</div>
-  </div>
-
-  <div class="developer-card">
-    <img src="{{ url_for('static', filename='profiles/lakshmisha.jpg') }}" alt="Lakshmisha">
-    <div class="name">Lakshmisha</div>
-    <div class="role">Deployment & Testing</div>
-  </div>
-</div>
-
-<footer>
-  <div style="display: flex; flex-wrap: wrap; justify-content: space-around; gap: 30px;">
-    <div style="max-width: 300px;">
-      <h4>🛍️ About Smart Grocery</h4>
-      <p>Smart Grocery is your trusted platform for fresh groceries and essentials. Built by passionate students for real-world use.</p>
-    </div>
-    <div style="max-width: 300px;">
-      <h4>📜 Terms & Conditions</h4>
-      <ul style="padding-left: 18px;">
-        <li>Items subject to availability.</li>
-        <li>Prices are final during checkout.</li>
-        <li>Delivery limited to service area.</li>
-        <li>Login security is user’s responsibility.</li>
-        <li>Cancel orders within 10 minutes.</li>
-      </ul>
-    </div>
-    <div style="max-width: 300px;">
-      <h4>📘 More Info</h4>
-      <ul style="padding-left: 18px;">
-        <li>Team: Akash & Developers</li>
-        <li>Built with Flask, MongoDB</li>
-        <li>Version 1.0.0</li>
-        <li>Email: smartgrocery@example.com</li>
-      </ul>
-    </div>
-  </div>
-  <hr style="margin: 20px 0; border-color: #ccc;">
-  <p>© {{ current_year }} Smart Grocery. All Rights Reserved.</p>
-</footer>
 {% endblock %}

@@ -1,109 +1,93 @@
 {% extends "base.html" %}
 
-{% block title %}🏠 Home - Smart Grocery{% endblock %}
+{% block title %}Home - Smart Grocery{% endblock %}
 
 {% block content %}
-<style>
-  .items-wrapper {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 10px 16px;
-  }
-
-  .items-section {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 20px;
-    padding: 20px 0;
-  }
-
-  .item-card {
-    background-color: #1f1f1f;
-    color: #f2f2f2;
-    padding: 16px;
-    border-radius: 12px;
-    text-align: center;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-    transition: transform 0.2s ease;
-  }
-
-  .item-card:hover {
-    transform: translateY(-4px);
-  }
-
-  .item-card img {
-    width: 100%;
-    height: 140px;
-    object-fit: cover;
-    border-radius: 10px;
-    margin-bottom: 12px;
-  }
-
-  .item-card h3 {
-    margin: 0 0 8px;
-    font-size: 18px;
-    color: #4dd0e1;
-  }
-
-  .item-card p {
-    margin: 4px 0;
-    font-size: 14px;
-  }
-
-  .item-card .price {
-    font-weight: bold;
-    color: #00e676;
-  }
-
-  .item-card form {
-    margin-top: 10px;
-  }
-
-  .item-card button {
-    background-color: #4caf50;
-    color: white;
-    border: none;
-    padding: 8px 16px;
-    font-size: 14px;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-  }
-
-  .item-card button:hover {
-    background-color: #43a047;
-  }
-
-  @media (max-width: 480px) {
-    .item-card {
-      padding: 12px;
-    }
-  }
-</style>
 
 <div class="items-wrapper">
-  <h1 style="text-align:center; color:#4dd0e1; margin-bottom: 20px;">🛒 Available Grocery Items</h1>
+  <div id="heroCarousel" class="carousel slide shadow full-bleed" data-bs-ride="carousel">
+    <div class="carousel-indicators">
+      <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="0" class="active"></button>
+      <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="1"></button>
+      <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="2"></button>
+      <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="3"></button>
+    </div>
+    <div class="carousel-inner" style="overflow:hidden; max-height: 360px;">
+      {% set banners = ['10319972.jpg','1105474.jpg','1201765.jpg','2069188.jpg'] %}
+      {% for b in banners %}
+      <div class="carousel-item {% if loop.first %}active{% endif %}" data-bs-interval="3000">
+        <img src="{{ url_for('static', filename='banners/' ~ b) }}" class="d-block w-100" alt="banner">
+      </div>
+      {% endfor %}
+    </div>
+    <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
+      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+      <span class="visually-hidden">Previous</span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">
+      <span class="carousel-control-next-icon" aria-hidden="true"></span>
+      <span class="visually-hidden">Next</span>
+    </button>
+  </div>
+
+  <div class="chip-band">
+    <div class="chip-row">
+      <a href="{{ url_for('view_items', category='fruits') }}" class="category-chip" style="--animation-index: 0;"><i class="fa-solid fa-apple-whole"></i> Fruits</a>
+      <a href="{{ url_for('view_items', category='vegetables') }}" class="category-chip" style="--animation-index: 1;"><i class="fa-solid fa-carrot"></i> Vegetables</a>
+      <a href="{{ url_for('view_items', category='beverages') }}" class="category-chip" style="--animation-index: 2;"><i class="fa-solid fa-bottle-water"></i> Beverages</a>
+      <a href="{{ url_for('view_items', category='snacks') }}" class="category-chip" style="--animation-index: 3;"><i class="fa-solid fa-cookie-bite"></i> Snacks</a>
+    </div>
+  </div>
+  
+  <div class="full-bleed py-2" style="background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px);">
+    <div class="px-3 px-md-4">
+      <h1 class="headline-xl text-center headline-animated" style="margin-bottom:20px;">
+        <span class="headline-accent">Available</span> <span style="color: var(--text-dark);">Grocery Items</span>
+      </h1>
+    </div>
+  </div>
 
   {% if items %}
-  <div class="items-section">
+  <div class="items-section full-bleed px-3 px-md-4">
     {% for item in items %}
-    <div class="item-card">
-      {% if item.image %}
-        <img src="{{ url_for('static', filename='uploads/' + item.image) }}" alt="{{ item.name }}">
-      {% else %}
-        <img src="{{ url_for('static', filename='images/default.jpg') }}" alt="No Image">
-      {% endif %}
-      <h3>{{ item.name }}</h3>
-      <p class="price">₹{{ item.price }}</p>
-      <p>{{ item.description }}</p>
-      <form method="POST" action="{{ url_for('add_to_cart', item_id=item._id) }}">
-        <button type="submit">➕ Add to Cart</button>
-      </form>
+    <div class="product-card">
+      <div class="img-wrap">
+        {% if item.image %}
+          <img src="{{ url_for('static', filename='uploads/' + item.image) }}" alt="{{ item.name }}" loading="lazy">
+        {% else %}
+          <img src="{{ url_for('static', filename='images/default.jpg') }}" alt="Default product image" loading="lazy">
+        {% endif %}
+      </div>
+      <div class="content">
+        <div class="title">{{ item.name }}</div>
+        <div class="price">₹{{ item.price }}</div>
+        <div class="text-muted">{{ item.description or 'No description available' }}</div>
+      </div>
+      <div class="actions">
+        <form method="POST" action="{{ url_for('add_to_cart', item_id=item._id) }}" style="flex: 1;">
+          <button type="submit" class="btn btn-cart" aria-label="Add {{ item.name }} to cart">
+            <i class="fa-solid fa-cart-plus"></i> Add to Cart
+          </button>
+        </form>
+        {% if session.get('user') %}
+        <form method="POST" action="{{ url_for('buy_now_page', item_id=item._id) }}" style="flex: 1;">
+          <button type="submit" class="btn btn-buy" aria-label="Buy {{ item.name }} now">
+            <i class="fa-solid fa-bolt"></i> Buy Now
+          </button>
+        </form>
+        {% else %}
+        <a href="{{ url_for('item_routes.login') }}" class="btn btn-buy" style="flex: 1; display: flex; align-items: center; justify-content: center;" aria-label="Login to buy {{ item.name }}">
+          <i class="fa-solid fa-bolt"></i> Buy Now
+        </a>
+        {% endif %}
+      </div>
     </div>
     {% endfor %}
   </div>
   {% else %}
-    <p style="text-align:center; color: #bbb;">No products available. Please check back later.</p>
+    <div class="text-center p-5">
+      <p style="color: var(--text-muted); font-size: 1.1rem;">No products available. Please check back later.</p>
+    </div>
   {% endif %}
 </div>
 {% endblock %}
