@@ -19,7 +19,7 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 # MongoDB connection with error handling
 try:
-    MONGO_URI = os.environ.get('MONGO_URI', 'mongodb://localhost:27017/')
+    MONGO_URI = os.environ.get('MONGO_URI', 'mongodb+srv://akashkkotari:o2xBJDxCpirEJduT@cluster0.g4cygtk.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0')
     MONGO_DB_NAME = os.environ.get('MONGO_DB_NAME', 'grocery_app')
     USE_MONGO_MOCK = os.environ.get('MONGO_MOCK') == '1'
 
