@@ -729,7 +729,8 @@ def download_invoice(order_id):
 
 if __name__ == "__main__":
     os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 5000))  # Railway ನೀಡುವ port
+    app.run(host="0.0.0.0", port=port)
 
 def create_admin_if_not_exists():
     if not user_collection.find_one({'username': 'admin'}):
