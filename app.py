@@ -17,19 +17,23 @@ UPLOAD_FOLDER = 'static/uploads'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-# MongoDB connection with error handling
-try:
-    MONGO_URI = os.environ.get('MONGO_URI')
-    MONGO_DB_NAME = os.environ.get('MONGO_DB_NAME','grocery_app')
-    USE_MONGO_MOCK = os.environ.get('MONGO_MOCK') == '1'
+# MongoDB Settings
+ATLAS_URI = os.environ.get('MONGO_URI', 'your_atlas_connection_string_here')
+LOCAL_URI = "mongodb://localhost:27017/"
+MONGO_DB_NAME = os.environ.get('MONGO_DB_NAME', 'grocery_app')
 
-    if USE_MONGO_MOCK:
-        # Use in-memory Mongo for tests
-        import importlib
-        mongomock = importlib.import_module('mongomock')
-        client = mongomock.MongoClient()
-    else:
-        client = MongoClient(MONGO_URI)
+try:
+    # Try Atlas first
+    client = MongoClient(ATLAS_URI, serverSelectionTimeoutMS=5000)
+    client.server_info()  # Forces a connection check
+    print("✅ Connected to MongoDB Atlas")
+except Exception as e:
+    print(f"⚠ Atlas connection failed: {e}")
+    print("🔄 Switching to local MongoDB...")
+    client = MongoClient(LOCAL_URI)
+    client.server_info()
+    print("✅ Connected to Local MongoDB")
+
 
     db = client[MONGO_DB_NAME]
     product_collection=db['items']
