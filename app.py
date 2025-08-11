@@ -806,19 +806,33 @@ def download_invoice(order_id):
 
     return response
 
+def create_admin_if_not_exists():
+    """Create admin user if it doesn't exist"""
+    try:
+        admin_user = user_collection.find_one({'username': 'admin'})
+        if not admin_user:
+            hashed_pwd = bcrypt.hashpw('admin123'.encode('utf-8'), bcrypt.gensalt())
+            result = user_collection.insert_one({
+                'username': 'admin',
+                'password': hashed_pwd,
+                'role': 'admin',
+                'created_at': datetime.now()
+            })
+            if result.inserted_id:
+                print("✅ Admin user created successfully!")
+                print("   Username: admin")
+                print("   Password: admin123")
+                print("   Role: admin")
+            else:
+                print("❌ Failed to create admin user")
+        else:
+            print(f"✅ Admin user already exists (Role: {admin_user.get('role', 'unknown')})")
+    except Exception as e:
+        print(f"❌ Error creating admin user: {e}")
+
+# Create admin user on startup
 if __name__ == "__main__":
     os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+    create_admin_if_not_exists()  # Create admin before starting server
     port = int(os.environ.get("PORT", 5000))  
     app.run(host="0.0.0.0", port=port)
-
-def create_admin_if_not_exists():
-    if not user_collection.find_one({'username': 'admin'}):
-        hashed_pwd = bcrypt.hashpw('admin123'.encode('utf-8'), bcrypt.gensalt())
-        user_collection.insert_one({
-            'username': 'admin',
-            'password': hashed_pwd,
-            'role': 'admin',
-            'created_at': datetime.now()
-        })
-
-create_admin_if_not_exists()
