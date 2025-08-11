@@ -1,20 +1,23 @@
 import bcrypt
 from pymongo import MongoClient
+import os
+from dotenv import load_dotenv
 
-client = MongoClient("mongodb://localhost:27017/")
-db = client["grocery_app"]
+load_dotenv()
+
+client = MongoClient(os.environ.get("MONGO_URI", "mongodb://localhost:27017/"))
+db = client[os.environ.get("MONGO_DB_NAME", "grocery_app")]
 users = db["users"]
-print(users.find_one({'username':'admin'}))
 
-admin_username = "admin"
-admin_password = "adminpass"
+admin_username = os.environ.get("ADMIN_USERNAME", "admin")
+admin_password = os.environ.get("ADMIN_PASSWORD", "adminpass")
 
 if not users.find_one({"username": admin_username}):
     hashed_pw = bcrypt.hashpw(admin_password.encode("utf-8"), bcrypt.gensalt())
     users.insert_one({
         "username": admin_username,
         "password": hashed_pw,
-        "is_admin": True
+        "role": "admin"
     })
     print("✅ Admin created")
 else:

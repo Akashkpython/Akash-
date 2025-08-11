@@ -76,7 +76,7 @@
           </button>
         </form>
         {% else %}
-        <a href="{{ url_for('item_routes.login') }}" class="btn btn-buy" style="flex: 1; display: flex; align-items: center; justify-content: center;" aria-label="Login to buy {{ item.name }}">
+        <a href="{{ safe_url_for('item_routes.login') }}" class="btn btn-buy" style="flex: 1; display: flex; align-items: center; justify-content: center;" aria-label="Login to buy {{ item.name }}">
           <i class="fa-solid fa-bolt"></i> Buy Now
         </a>
         {% endif %}

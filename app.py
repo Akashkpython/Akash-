@@ -1,52 +1,81 @@
-from flask import Flask, request, render_template, redirect, url_for, session, flash
-from pymongo import MongoClient
+from flask import Flask, request, render_template, redirect, url_for, session, flash, jsonify
+from pymongo import MongoClient, ASCENDING
 from bson.objectid import ObjectId
 from werkzeug.utils import secure_filename
 import os
 from datetime import datetime
 from functools import wraps
 from decorators import login_required
+from dotenv import load_dotenv
 import bcrypt
 
 from api.item_routes import item_routes, init_item_routes
 
+load_dotenv()
+
 app = Flask(__name__)
-app.secret_key = os.environ.get('SECRET_KEY', 'CHANGE_ME_IN_PRODUCTION')
+app.secret_key = os.environ.get('SECRET_KEY') or os.urandom(24)
+app.config.setdefault('SESSION_COOKIE_HTTPONLY', True)
+app.config.setdefault('SESSION_COOKIE_SAMESITE', 'Lax')
+app.config.setdefault('SESSION_COOKIE_SECURE', bool(os.environ.get('FLASK_PROD') or os.environ.get('RAILWAY_ENV')))
 
 UPLOAD_FOLDER = 'static/uploads'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-# MongoDB Settings
-ATLAS_URI = os.environ.get('MONGO_URI', 'your_atlas_connection_string_here')
-LOCAL_URI = "mongodb://localhost:27017/"
-MONGO_DB_NAME = os.environ.get('MONGO_DB_NAME', 'grocery_app')
+# Register blueprint early so templates can build URLs even during error handling
+app.register_blueprint(item_routes)
 
+# MongoDB connection with error handling
 try:
-    # Try Atlas first
-    client = MongoClient(ATLAS_URI, serverSelectionTimeoutMS=5000)
-    client.server_info()  # Forces a connection check
-    print("✅ Connected to MongoDB Atlas")
-except Exception as e:
-    print(f"⚠ Atlas connection failed: {e}")
-    print("🔄 Switching to local MongoDB...")
-    client = MongoClient(LOCAL_URI)
-    client.server_info()
-    print("✅ Connected to Local MongoDB")
+    # Use provided Atlas URI by default; can be overridden via env var
+    MONGO_URI = os.environ.get(
+        'MONGO_URI',
+        'mongodb+srv://akashkkota:UTr1O4G1UMXq60pB@cluster0.g4cygtk.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0'
+    )
+    MONGO_DB_NAME = os.environ.get('MONGO_DB_NAME', 'grocery_app')
+    USE_MONGO_MOCK = os.environ.get('MONGO_MOCK') == '1'
 
+    if USE_MONGO_MOCK:
+        # Use in-memory Mongo for tests
+        import importlib
+        mongomock = importlib.import_module('mongomock')
+        client = mongomock.MongoClient()
+        print("✅ Using mongomock (in-memory)")
+    else:
+        client = MongoClient(MONGO_URI, serverSelectionTimeoutMS=5000)
+        client.server_info()  # Force connection check
 
     db = client[MONGO_DB_NAME]
-    product_collection=db['items']
-    items_collection = db["items"]
-    user_collection = db["users"]
-    cart_collection = db["cart"]
-    orders_collection = db["orders"]
+
+    # Collections
+    product_collection = db['items']
+    items_collection = db['items']
+    user_collection = db['users']
+    cart_collection = db['cart']
+    orders_collection = db['orders']
+
+    # Indexes (safe if exist)
+    try:
+        items_collection.create_index([('name', ASCENDING)])
+        cart_collection.create_index([('username', ASCENDING)])
+        orders_collection.create_index([('username', ASCENDING)])
+        orders_collection.create_index([('date', ASCENDING)])
+    except Exception:
+        pass
 
     init_item_routes(items_collection, user_collection)
-    app.register_blueprint(item_routes)
-    
+
+    # Startup confirmation
+    try:
+        collections = db.list_collection_names()
+    except Exception:
+        collections = []
+    print(f"✅ MongoDB connected. Database: {MONGO_DB_NAME}")
+    print(f"📚 Collections: {collections}")
+
 except Exception as e:
-    print("Error connecting to MongoDB. Check server and URI.")
+    print(f"Error connecting to MongoDB. Check server and URI. Details: {e}")
     raise
 
 def allowed_file(filename):
@@ -60,6 +89,19 @@ def admin_only(f):
             return redirect(url_for('item_routes.login'))
         return f(*args, **kwargs)
     return decorated_function
+
+@app.route("/test-db")
+def test_db():
+    try:
+        # Check one document from items collection
+        sample = items_collection.find_one()
+        if sample:
+            sample["_id"] = str(sample["_id"])  # ObjectId to string
+            return {"status": "success", "sample_document": sample}
+        else:
+            return {"status": "success", "message": "Connected, but no documents found in 'items' collection."}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
 
 
 # Route to handle Add to Cart
@@ -216,6 +258,7 @@ def admin_analytics():
 
 @app.route('/')
 def home():
+    global items_collection 
     items = items_collection.find().limit(6)
     return render_template('home.html', items=items)
 
@@ -579,6 +622,16 @@ def change_password():
 def inject_year():
     return {'current_year': datetime.now().year}
 
+# Safe URL builder to avoid BuildError during error pages if blueprint isn't ready
+@app.context_processor
+def utility_processor():
+    def safe_url_for(endpoint, **values):
+        try:
+            return url_for(endpoint, **values)
+        except Exception:
+            return '#'
+    return dict(safe_url_for=safe_url_for)
+
 @app.errorhandler(404)
 def page_not_found(e):
     return render_template('404.html'), 404
@@ -636,7 +689,7 @@ def edit_item(item_id):
 
     return render_template('edit_item.html', item=item)
 
-@app.route('/delete_item/<item_id>', methods=['GET', 'POST'])
+@app.route('/delete_item/<item_id>', methods=['POST'])
 @admin_only
 def delete_item(item_id):
     if not session.get('user') or session.get('role') != 'admin':

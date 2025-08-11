@@ -130,6 +130,6 @@
 <button type="submit">✅ Submit</button>
   </form>
 
-  <p>Already have an account? <a href="{{ url_for('item_routes.login') }}">🔐 Login here</a></p>
+  <p>Already have an account? <a href="{{ safe_url_for('item_routes.login') }}">🔐 Login here</a></p>
 </div>
 {% endblock %}

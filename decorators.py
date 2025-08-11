@@ -26,7 +26,7 @@ def admin_required(f):
         if 'user' not in session:
             flash("Please log in first.", "warning")
             return redirect(url_for('item_routes.login'))
-        if not session.get('is_admin'):
+        if session.get('role') != 'admin':
             flash("You do not have permission to access this page.", "danger")
             return redirect(url_for('home'))
         return f(*args, **kwargs)
