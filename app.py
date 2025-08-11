@@ -99,9 +99,30 @@ def test_db():
             sample["_id"] = str(sample["_id"])  # ObjectId to string
             return {"status": "success", "sample_document": sample}
         else:
-            return {"status": "success", "message": "Connected, but no documents found in 'items' collection."}
+            return {"message": "Connected, but no documents found in 'items' collection.", "status": "success"}
     except Exception as e:
-        return {"status": "error", "message": str(e)}
+        return {"error": str(e), "status": "error"}
+
+@app.route("/debug/auth")
+def debug_auth():
+    """Debug route to check authentication status and database users"""
+    try:
+        debug_info = {
+            "session_data": dict(session),
+            "user_collection_count": user_collection.count_documents({}),
+            "items_collection_count": items_collection.count_documents({}),
+            "sample_users": []
+        }
+        
+        # Get sample users (without passwords)
+        users = list(user_collection.find({}, {'username': 1, 'role': 1, 'created_at': 1}).limit(5))
+        for user in users:
+            user['_id'] = str(user['_id'])
+            debug_info['sample_users'].append(user)
+            
+        return jsonify(debug_info)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 
 # Route to handle Add to Cart
@@ -262,39 +283,40 @@ def home():
     items = items_collection.find().limit(6)
     return render_template('home.html', items=items)
 
-@app.route('/signup', methods=['GET', 'POST'])
-def signup():
-    if request.method == 'POST':
-        uname = request.form['username'].strip()
-        pwd = request.form['password']
-        confirm = request.form['confirm_password']
-        
-        if not uname or not pwd:
-            flash("Username and password are required.")
-            return redirect(url_for('signup'))
-            
-        if pwd != confirm:
-            flash("Passwords do not match.")
-            return redirect(url_for('signup'))
-            
-        if len(pwd) < 6:
-            flash("Password must be at least 6 characters.")
-            return redirect(url_for('signup'))
-            
-        if user_collection.find_one({'username': uname}):
-            flash("Username already exists.")
-            return redirect(url_for('signup'))
-            
-        hashed_pwd = bcrypt.hashpw(pwd.encode('utf-8'), bcrypt.gensalt())
-        user_collection.insert_one({
-            'username': uname, 
-            'password': hashed_pwd, 
-            'role': 'user',
-            'created_at': datetime.now()
-        })
-        flash("Account created successfully. Please log in.")
-        return redirect(url_for('item_routes.login'))
-    return render_template('signup.html')
+# Remove duplicate signup route - it's handled by item_routes blueprint
+# @app.route('/signup', methods=['GET', 'POST'])
+# def signup():
+#     if request.method == 'POST':
+#         uname = request.form['username'].strip()
+#         pwd = request.form['password']
+#         confirm = request.form['confirm_password']
+#         
+#         if not uname or not pwd:
+#             flash("Username and password are required.")
+#             return redirect(url_for('signup'))
+#             
+#         if pwd != confirm:
+#             flash("Passwords do not match.")
+#             return redirect(url_for('signup'))
+#             
+#         if len(pwd) < 6:
+#             flash("Password must be at least 6 characters.")
+#             return redirect(url_for('signup'))
+#             
+#         if user_collection.find_one({'username': uname}):
+#             flash("Username already exists.")
+#             return redirect(url_for('signup'))
+#             
+#         hashed_pwd = bcrypt.hashpw(pwd.encode('utf-8'), bcrypt.gensalt())
+#         user_collection.insert_one({
+#             'username': uname, 
+#             'password': hashed_pwd, 
+#             'role': 'user',
+#             'created_at': datetime.now()
+#         })
+#         flash("Account created successfully. Please log in.")
+#         return redirect(url_for('item_routes.login'))
+#     return render_template('signup.html')
 
 @app.route('/add_product', methods=['GET', 'POST'])
 @admin_only

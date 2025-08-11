@@ -1,6 +1,7 @@
 from flask import Blueprint, jsonify, request, render_template, redirect, url_for, session, flash
 from bson.objectid import ObjectId
 import bcrypt
+from datetime import datetime
 
 item_routes = Blueprint('item_routes', __name__)
 
@@ -20,25 +21,42 @@ def init_item_routes(db_items_collection, db_user_collection):
 @item_routes.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        username = request.form.get('username')
-        password = request.form.get('password').encode('utf-8')
+        username = request.form.get('username', '').strip()
+        password = request.form.get('password', '')
 
+        # Input validation
+        if not username or not password:
+            flash("❌ Username and password are required.")
+            return redirect(url_for('item_routes.login'))
+
+        # Find user in database
         user = user_collection.find_one({'username': username})
         if not user:
-            flash("❌ User not found.")
+            flash("❌ User not found. Please check your username.")
             return redirect(url_for('item_routes.login'))
 
-        if not bcrypt.checkpw(password, user['password']):
-            flash("❌ Incorrect password.")
+        # Verify password
+        try:
+            if not bcrypt.checkpw(password.encode('utf-8'), user['password']):
+                flash("❌ Incorrect password. Please try again.")
+                return redirect(url_for('item_routes.login'))
+        except Exception as e:
+            print(f"Password verification error: {e}")
+            flash("❌ Authentication error. Please try again.")
             return redirect(url_for('item_routes.login'))
 
+        # Set session data
         session['user'] = username
         session['role'] = user.get('role', 'user')
-        flash("✅ Login successful.")
+        session['user_id'] = str(user['_id'])
+        
+        flash("✅ Login successful! Welcome back.")
         
         # Resume add to cart if user came from that action
         if session.get('next_action'):
-            return redirect(url_for('resume_add_to_cart'))
+            next_action = session.pop('next_action')
+            if next_action.get('action') == 'add_to_cart':
+                return redirect(url_for('resume_add_to_cart'))
 
         return redirect(url_for('home'))
 
@@ -51,26 +69,56 @@ def login():
 @item_routes.route('/signup', methods=['GET', 'POST'])
 def signup():
     if request.method == 'POST':
-        username = request.form.get('username').strip()
-        password = request.form.get('password')
+        username = request.form.get('username', '').strip()
+        password = request.form.get('password', '')
+        confirm_password = request.form.get('confirm_password', '')
 
-        if not username or not password:
+        # Input validation
+        if not username or not password or not confirm_password:
             flash("❗ All fields are required.")
             return redirect(url_for('item_routes.signup'))
 
-        if user_collection.find_one({'username': username}):
-            flash("❌ Username already exists.")
+        if len(username) < 3 or len(username) > 20:
+            flash("❗ Username must be 3-20 characters long.")
             return redirect(url_for('item_routes.signup'))
 
-        hashed_pwd = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+        if len(password) < 6:
+            flash("❗ Password must be at least 6 characters long.")
+            return redirect(url_for('item_routes.signup'))
 
-        user_collection.insert_one({
-            'username': username,
-            'password': hashed_pwd,
-            'role': 'user'
-        })
-        flash("✅ Signup successful. Please log in.")
-        return redirect(url_for('item_routes.login'))
+        if password != confirm_password:
+            flash("❗ Passwords do not match.")
+            return redirect(url_for('item_routes.signup'))
+
+        # Check if username already exists
+        if user_collection.find_one({'username': username}):
+            flash("❌ Username already exists. Please choose another.")
+            return redirect(url_for('item_routes.signup'))
+
+        # Hash password and create user
+        try:
+            hashed_pwd = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+            
+            user_data = {
+                'username': username,
+                'password': hashed_pwd,
+                'role': 'user',
+                'created_at': datetime.now()
+            }
+            
+            result = user_collection.insert_one(user_data)
+            
+            if result.inserted_id:
+                flash("✅ Account created successfully! Please log in.")
+                return redirect(url_for('item_routes.login'))
+            else:
+                flash("❌ Failed to create account. Please try again.")
+                return redirect(url_for('item_routes.signup'))
+                
+        except Exception as e:
+            print(f"User creation error: {e}")
+            flash("❌ Error creating account. Please try again.")
+            return redirect(url_for('item_routes.signup'))
 
     return render_template('signup.html')
 
