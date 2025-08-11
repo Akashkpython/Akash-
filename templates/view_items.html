@@ -28,9 +28,9 @@
     <div class="product-card">
       <div class="img-wrap">
         {% if item.image and item.image.strip() %}
-          <img src="{{ url_for('static', filename='uploads/' ~ item.image) }}" alt="{{ item.name }}" loading="lazy">
+          <img src="{{ url_for('static', filename='uploads/' ~ item.image) }}" alt="{{ item.name }}" loading="lazy" style="width: 100%; height: 200px; object-fit: cover; border-radius: 10px;">
         {% else %}
-          <img src="{{ url_for('static', filename='images/default-product.png') }}" alt="Default product image" loading="lazy">
+          <img src="{{ url_for('static', filename='images/default-product.png') }}" alt="Default product image" loading="lazy" style="width: 100%; height: 200px; object-fit: cover; border-radius: 10px;">
         {% endif %}
       </div>
       <div class="content">
