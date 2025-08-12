@@ -54,6 +54,22 @@ try:
     user_collection = db['users']
     cart_collection = db['cart']
     orders_collection = db['orders']
+    
+    # Initialize banner collection with error handling
+    try:
+        banner_collection = db['banners']
+        # Create a test document to ensure collection exists
+        if banner_collection.count_documents({}) == 0:
+            # Insert a dummy banner to initialize the collection
+            banner_collection.insert_one({
+                'filename': 'default_banner.jpg',
+                'uploaded_at': datetime.now(),
+                'uploaded_by': 'system'
+            })
+            print("✅ Banner collection initialized")
+    except Exception as e:
+        print(f"⚠️ Warning: Could not initialize banner collection: {e}")
+        banner_collection = None
 
     # Indexes (safe if exist)
     try:
@@ -124,6 +140,26 @@ def debug_auth():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+@app.route("/debug/admin")
+def debug_admin():
+    """Debug route to check admin access requirements"""
+    try:
+        debug_info = {
+            "session_data": dict(session),
+            "user_in_session": 'user' in session,
+            "user_role": session.get('role') if 'user' in session else None,
+            "is_admin": session.get('role') == 'admin' if 'user' in session else False,
+            "admin_users_in_db": list(user_collection.find({'role': 'admin'}, {'username': 1, 'role': 1}))
+        }
+        
+        # Convert ObjectIds to strings
+        for user in debug_info['admin_users_in_db']:
+            user['_id'] = str(user['_id'])
+            
+        return jsonify(debug_info)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 
 # Route to handle Add to Cart
 # Removed duplicate add_to_cart route using 'username' session key
@@ -157,13 +193,137 @@ def add_item():
 @app.route('/admin')
 @admin_only
 def admin_dashboard():
-    total_users = user_collection.count_documents({})
-    total_orders = orders_collection.count_documents({})
-    total_items = items_collection.count_documents({})
-    return render_template('admin/dashboard.html',
-                           total_users=total_users,
-                           total_orders=total_orders,
-                           total_items=total_items)
+    try:
+        print("🔍 Admin dashboard accessed by:", session.get('user'))
+        
+        # Get basic counts
+        total_users = user_collection.count_documents({})
+        total_orders = orders_collection.count_documents({})
+        total_items = items_collection.count_documents({})
+        
+        print(f"📊 Counts - Users: {total_users}, Orders: {total_orders}, Items: {total_items}")
+        
+        # Calculate total revenue
+        total_revenue = 0.0
+        try:
+            for order in orders_collection.find():
+                for item in order.get('items', []):
+                    total_revenue += float(item.get('price', 0)) * int(item.get('quantity', 1))
+        except Exception as e:
+            print(f"⚠️ Revenue calculation error: {e}")
+            total_revenue = 0.0
+        
+        print(f"💰 Total revenue: {total_revenue}")
+        
+        # Get banners for display - with error handling
+        banners = []
+        if banner_collection:
+            try:
+                banners = list(banner_collection.find())
+                print(f"🖼️ Found {len(banners)} banners")
+            except Exception as e:
+                print(f"⚠️ Banner collection error: {e}")
+                banners = []
+        else:
+            print("⚠️ Banner collection not available")
+        
+        print("✅ Admin dashboard data prepared successfully")
+        
+        return render_template('admin/dashboard.html',
+                               total_users=total_users,
+                               total_orders=total_orders,
+                               total_items=total_items,
+                               total_revenue=round(total_revenue, 2),
+                               banners=banners)
+    except Exception as e:
+        print(f"❌ Admin dashboard error: {e}")
+        import traceback
+        traceback.print_exc()
+        flash(f'Error loading dashboard: {str(e)}', 'error')
+        return render_template('admin/dashboard.html',
+                               total_users=0,
+                               total_orders=0,
+                               total_items=0,
+                               total_revenue=0,
+                               banners=[])
+
+@app.route('/upload_banner', methods=['POST'])
+@admin_only
+def upload_banner():
+    try:
+        if not banner_collection:
+            flash('Banner management not available', 'error')
+            return redirect(url_for('admin_dashboard'))
+            
+        if 'banner_image' not in request.files:
+            flash('No file selected', 'error')
+            return redirect(url_for('admin_dashboard'))
+        
+        file = request.files['banner_image']
+        if file.filename == '':
+            flash('No file selected', 'error')
+            return redirect(url_for('admin_dashboard'))
+        
+        if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            # Add timestamp to make filename unique
+            name, ext = os.path.splitext(filename)
+            timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+            filename = f"{name}_{timestamp}{ext}"
+            
+            # Save to banners folder
+            banner_folder = 'static/banners'
+            if not os.path.exists(banner_folder):
+                os.makedirs(banner_folder)
+            
+            file_path = os.path.join(banner_folder, filename)
+            file.save(file_path)
+            
+            # Save banner info to database
+            try:
+                banner_data = {
+                    'filename': filename,
+                    'uploaded_at': datetime.now(),
+                    'uploaded_by': session['user']
+                }
+                banner_collection.insert_one(banner_data)
+                flash('Banner uploaded successfully!', 'success')
+            except Exception as e:
+                print(f"Database error: {e}")
+                flash('Banner uploaded but database error occurred', 'warning')
+        else:
+            flash('Invalid file type. Please upload an image.', 'error')
+    except Exception as e:
+        print(f"Upload error: {e}")
+        flash(f'Error uploading banner: {str(e)}', 'error')
+    
+    return redirect(url_for('admin_dashboard'))
+
+@app.route('/delete_banner/<banner_id>', methods=['POST'])
+@admin_only
+def delete_banner(banner_id):
+    try:
+        if not banner_collection:
+            flash('Banner management not available', 'error')
+            return redirect(url_for('admin_dashboard'))
+            
+        banner = banner_collection.find_one({'_id': ObjectId(banner_id)})
+        if banner:
+            # Delete file from filesystem
+            file_path = os.path.join('static/banners', banner['filename'])
+            if os.path.exists(file_path):
+                os.remove(file_path)
+            
+            # Delete from database
+            banner_collection.delete_one({'_id': ObjectId(banner_id)})
+            flash('Banner deleted successfully!', 'success')
+        else:
+            flash('Banner not found', 'error')
+    except Exception as e:
+        print(f"Delete banner error: {e}")
+        flash(f'Error deleting banner: {str(e)}', 'error')
+    
+    return redirect(url_for('admin_dashboard'))
 
 @app.route('/admin/users')
 @admin_only

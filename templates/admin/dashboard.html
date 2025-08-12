@@ -58,6 +58,46 @@
     </div>
   </div>
 
+  <!-- Banner Management Section -->
+  <div class="banner-management card-surface">
+    <h2 class="section-title">
+      <i class="fa-solid fa-images"></i> Banner Management
+    </h2>
+    
+    <div class="banner-upload-section">
+      <form action="{{ url_for('upload_banner') }}" method="POST" enctype="multipart/form-data" class="banner-upload-form">
+        <div class="upload-group">
+          <label for="banner_image">Upload New Banner:</label>
+          <input type="file" name="banner_image" id="banner_image" accept="image/*" required>
+          <button type="submit" class="btn btn-accent">
+            <i class="fa-solid fa-upload"></i> Upload Banner
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <div class="current-banners">
+      <h3>Current Banners</h3>
+      <div class="banner-grid">
+        {% for banner in banners %}
+        <div class="banner-item">
+          <img src="{{ url_for('static', filename='banners/' + banner.filename) }}" alt="Banner {{ loop.index }}">
+          <div class="banner-actions">
+            <span class="banner-name">{{ banner.filename }}</span>
+            <form action="{{ url_for('delete_banner', banner_id=banner._id) }}" method="POST" style="display: inline;">
+              <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this banner?')">
+                <i class="fa-solid fa-trash"></i> Delete
+              </button>
+            </form>
+          </div>
+        </div>
+        {% else %}
+        <p class="no-banners">No banners uploaded yet.</p>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
   <!-- Quick Actions -->
   <div class="quick-actions card-surface">
     <h2 class="section-title">
@@ -79,14 +119,6 @@
         </div>
         <h3>Manage Items</h3>
         <p>Edit or delete products</p>
-      </a>
-
-      <a href="{{ url_for('view_users') }}" class="action-card">
-        <div class="action-icon">
-          <i class="fa-solid fa-user-gear"></i>
-        </div>
-        <h3>User Management</h3>
-        <p>Manage customer accounts</p>
       </a>
 
       <a href="{{ url_for('admin_analytics') }}" class="action-card">
@@ -255,6 +287,128 @@
   margin: 0;
 }
 
+/* Banner Management Styles */
+.banner-management {
+  padding: 30px;
+  margin-bottom: 40px;
+}
+
+.banner-upload-section {
+  margin-bottom: 30px;
+  padding: 25px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(249, 250, 251, 0.1) 100%);
+  border-radius: var(--radius-lg);
+  border: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+.banner-upload-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.upload-group {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.upload-group label {
+  font-weight: 700;
+  color: var(--text-light);
+  font-size: 1.1rem;
+}
+
+.upload-group input[type="file"] {
+  padding: 15px;
+  background: rgba(255, 255, 255, 0.9);
+  border: 2px solid rgba(99, 102, 241, 0.2);
+  border-radius: var(--radius-lg);
+  color: #1f2937;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all var(--transition-normal);
+}
+
+.upload-group input[type="file"]:hover {
+  border-color: var(--primary);
+  box-shadow: var(--shadow-md);
+}
+
+.upload-group button {
+  align-self: flex-start;
+  padding: 15px 30px;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.current-banners h3 {
+  color: var(--text-light);
+  font-size: 1.3rem;
+  margin-bottom: 20px;
+  font-weight: 600;
+}
+
+.banner-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.banner-item {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  transition: all var(--transition-normal);
+}
+
+.banner-item:hover {
+  transform: translateY(-4px);
+  border-color: var(--primary);
+  box-shadow: var(--shadow-lg);
+}
+
+.banner-item img {
+  width: 100%;
+  height: 150px;
+  object-fit: cover;
+  display: block;
+}
+
+.banner-actions {
+  padding: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.banner-name {
+  color: var(--text-light);
+  font-weight: 600;
+  font-size: 0.9rem;
+  max-width: 150px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.btn-sm {
+  padding: 8px 16px;
+  font-size: 0.8rem;
+}
+
+.no-banners {
+  text-align: center;
+  color: var(--text-muted);
+  font-style: italic;
+  padding: 40px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: var(--radius-lg);
+  border: 2px dashed rgba(255, 255, 255, 0.1);
+}
+
 .quick-actions {
   padding: 30px;
   margin-bottom: 40px;
@@ -407,8 +561,19 @@
   }
   
   .quick-actions,
-  .recent-activity {
+  .recent-activity,
+  .banner-management {
     padding: 20px;
+  }
+  
+  .banner-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .banner-actions {
+    flex-direction: column;
+    gap: 15px;
+    text-align: center;
   }
 }
 
@@ -424,6 +589,10 @@
   
   .actions-grid {
     grid-template-columns: 1fr;
+  }
+  
+  .upload-group button {
+    align-self: stretch;
   }
 }
 </style>

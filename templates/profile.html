@@ -7,109 +7,205 @@
   .profile-container {
     max-width: 800px;
     margin: 30px auto;
-    background-color: #1f1f1f;
-    padding: 30px 20px;
-    border-radius: 12px;
-    color: #f2f2f2;
-    box-shadow: 0 0 12px rgba(0, 0, 0, 0.4);
-    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(249, 250, 251, 0.95) 100%);
+    padding: 40px 30px;
+    border-radius: 20px;
+    color: #1f2937;
+    box-shadow: var(--shadow-2xl);
+    font-family: 'Poppins', 'Segoe UI', sans-serif;
     box-sizing: border-box;
     width: 100%;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(15px);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .profile-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 6px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    z-index: 1;
   }
 
   .profile-container h1 {
     text-align: center;
-    color: #4dd0e1;
-    margin-bottom: 25px;
-    font-size: 28px;
+    color: #1f2937;
+    margin-bottom: 30px;
+    font-size: 2.2rem;
+    font-weight: 800;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    position: relative;
+    z-index: 2;
   }
 
   .profile-container p {
-    font-size: 16px;
-    margin-bottom: 10px;
+    font-size: 1.1rem;
+    margin-bottom: 15px;
+    color: #374151;
+    font-weight: 600;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  }
+
+  .profile-container .username {
+    background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+    padding: 15px 20px;
+    border-radius: 12px;
+    border: 2px solid rgba(99, 102, 241, 0.2);
+    margin: 20px 0;
+    font-weight: 700;
+    color: #1f2937;
+    box-shadow: var(--shadow-sm);
   }
 
   .profile-container img {
     display: block;
-    margin: 12px auto 20px;
-    width: 150px;
-    height: 150px;
+    margin: 20px auto 30px;
+    width: 180px;
+    height: 180px;
     object-fit: cover;
     border-radius: 50%;
-    border: 3px solid #4dd0e1;
+    border: 4px solid #667eea;
+    box-shadow: var(--shadow-lg);
+    transition: transform var(--transition-normal);
+  }
+
+  .profile-container img:hover {
+    transform: scale(1.05);
   }
 
   .profile-container form {
-    margin-top: 25px;
+    margin-top: 30px;
     text-align: center;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.8) 0%, rgba(249, 250, 251, 0.8) 100%);
+    padding: 25px;
+    border-radius: 15px;
+    border: 2px solid rgba(99, 102, 241, 0.1);
+    backdrop-filter: blur(10px);
+  }
+
+  .profile-container label {
+    display: block;
+    margin-bottom: 15px;
+    font-weight: 700;
+    color: #1f2937;
+    font-size: 1.1rem;
   }
 
   .profile-container input[type="file"] {
-    margin: 10px 0;
-    padding: 6px;
-    color: #eee;
-    background-color: transparent;
-    border: none;
+    margin: 15px 0;
+    padding: 12px;
+    color: #1f2937;
+    background: rgba(255, 255, 255, 0.9);
+    border: 2px solid rgba(99, 102, 241, 0.2);
+    border-radius: 8px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all var(--transition-normal);
+  }
+
+  .profile-container input[type="file"]:hover {
+    border-color: #667eea;
+    box-shadow: var(--shadow-md);
   }
 
   .profile-container button {
-    padding: 10px 20px;
-    background-color: #4caf50;
+    padding: 15px 30px;
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
     color: white;
     border: none;
-    border-radius: 6px;
-    font-size: 15px;
+    border-radius: 12px;
+    font-size: 1.1rem;
     cursor: pointer;
-    font-weight: bold;
-    transition: background-color 0.2s ease;
+    font-weight: 700;
+    transition: all var(--transition-normal);
+    box-shadow: var(--shadow-md);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
   }
 
   .profile-container button:hover {
-    background-color: #43a047;
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-lg), 0 0 20px rgba(16, 185, 129, 0.4);
   }
 
   .flash-messages {
     list-style: none;
     padding: 0;
-    color: #ffc107;
-    margin-bottom: 15px;
+    color: #ffffff;
+    margin-bottom: 20px;
     text-align: center;
-    font-weight: bold;
+    font-weight: 600;
   }
 
   .flash-messages li {
-    padding: 10px;
-    background-color: #333;
-    border-radius: 6px;
-    margin-bottom: 6px;
+    padding: 15px 20px;
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    border-radius: 10px;
+    margin-bottom: 10px;
+    box-shadow: var(--shadow-md);
+    border: 2px solid rgba(245, 158, 11, 0.3);
   }
 
   .profile-container a {
     display: block;
     text-align: center;
-    margin-top: 25px;
-    color: #4dd0e1;
+    margin-top: 30px;
+    color: #667eea;
     text-decoration: none;
-    font-weight: bold;
+    font-weight: 700;
+    font-size: 1.1rem;
+    padding: 12px 25px;
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(99, 102, 241, 0.2) 100%);
+    border-radius: 10px;
+    border: 2px solid rgba(99, 102, 241, 0.2);
+    transition: all var(--transition-normal);
   }
 
   .profile-container a:hover {
-    text-decoration: underline;
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.2) 0%, rgba(99, 102, 241, 0.3) 100%);
+    border-color: #667eea;
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+    text-decoration: none;
+  }
+
+  .no-pic-message {
+    text-align: center;
+    font-style: italic;
+    color: #6b7280;
+    background: rgba(243, 244, 246, 0.8);
+    padding: 20px;
+    border-radius: 10px;
+    border: 2px dashed rgba(99, 102, 241, 0.3);
+    margin: 20px 0;
   }
 
   @media (max-width: 480px) {
     .profile-container {
       margin: 15px;
-      padding: 20px;
+      padding: 25px 20px;
     }
 
     .profile-container h1 {
-      font-size: 22px;
+      font-size: 1.8rem;
     }
 
     .profile-container img {
-      width: 120px;
-      height: 120px;
+      width: 140px;
+      height: 140px;
+    }
+
+    .profile-container form {
+      padding: 20px;
+    }
+
+    .profile-container button {
+      padding: 12px 25px;
+      font-size: 1rem;
     }
   }
 </style>
@@ -127,17 +223,21 @@
     {% endif %}
   {% endwith %}
 
-  <p><strong>Username:</strong> {{ user.username }}</p>
+  <div class="username">
+    <strong>Username:</strong> {{ user.username }}
+  </div>
 
   {% if user.profile_pic %}
     <img src="{{ url_for('static', filename='uploads/' + user.profile_pic) }}" alt="Profile Picture">
   {% else %}
-    <p style="text-align: center; font-style: italic; color: #aaa;">No profile picture uploaded.</p>
+    <div class="no-pic-message">
+      <p>No profile picture uploaded.</p>
+    </div>
   {% endif %}
 
   <form method="POST" enctype="multipart/form-data">
-    <label for="profile_pic"><strong>Upload New Photo:</strong></label><br>
-    <input type="file" name="profile_pic" id="profile_pic" accept="image/*" required><br>
+    <label for="profile_pic"><strong>Upload New Photo:</strong></label>
+    <input type="file" name="profile_pic" id="profile_pic" accept="image/*" required>
     <button type="submit">📤 Upload</button>
   </form>
 
@@ -149,7 +249,10 @@
     const preview = document.createElement('img');
     preview.src = URL.createObjectURL(event.target.files[0]);
     preview.style.width = '120px';
-    preview.style.marginTop = '10px';
+    preview.style.marginTop = '15px';
+    preview.style.borderRadius = '50%';
+    preview.style.border = '2px solid #667eea';
+    preview.style.boxShadow = 'var(--shadow-md)';
     this.parentNode.appendChild(preview);
   });
 </script>
