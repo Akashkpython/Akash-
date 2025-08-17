@@ -60,44 +60,28 @@
       </div>
     </div>
 
-<audio id="bg-music" controls></audio>
+<audio id="bg-music" loop>
+    <source src="{{ url_for('static', filename='music/music1.mp3') }}" type="audio/mpeg">
+    <source src="{{ url_for('static', filename='music/music2.mp3') }}" type="audio/mpeg">
+</audio>
 
 <script>
-    const playlist = [
-        "{{ url_for('static', filename='music/music2.mp3') }}",
-        "{{ url_for('static', filename='music/music3.mp3') }}"
-    ];
-
-    let currentTrack = 0;
     const music = document.getElementById('bg-music');
 
-    function loadTrack(index) {
-        music.src = playlist[index];
-        music.play().catch(() => console.log("Autoplay blocked"));
-    }
-
-    // Start with first track
+    // Restore playback position if available
     window.addEventListener('load', () => {
         const savedTime = localStorage.getItem('musicTime');
-        const savedTrack = localStorage.getItem('musicTrack');
-
-        if (savedTrack) currentTrack = parseInt(savedTrack);
-
-        loadTrack(currentTrack);
-
-        if (savedTime) music.currentTime = parseFloat(savedTime);
+        if (savedTime) {
+            music.currentTime = parseFloat(savedTime);
+        }
+        music.play().catch(() => {
+            console.log("Autoplay blocked");
+        });
     });
 
-    // When one ends, go to next
-    music.addEventListener('ended', () => {
-        currentTrack = (currentTrack + 1) % playlist.length; // loop playlist
-        loadTrack(currentTrack);
-    });
-
-    // Save state before reload
+    // Save playback position before reload
     window.addEventListener('beforeunload', () => {
         localStorage.setItem('musicTime', music.currentTime);
-        localStorage.setItem('musicTrack', currentTrack);
     });
 </script>
 
