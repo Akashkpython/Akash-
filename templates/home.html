@@ -13,7 +13,7 @@
       <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="3"></button>
     </div>
     <div class="carousel-inner" style="overflow:hidden; max-height: 360px;">
-      {% set banners = ['222222.jpg','777777.jpg','888888.jpg','1105474.jpg'] %}
+      {% set banners = ['3333.jpg','2222.jpg','4444.jpg','1111.jpg'] %}
       {% for b in banners %}
       <div class="carousel-item {% if loop.first %}active{% endif %}" data-bs-interval="3000">
         <img src="{{ url_for('static', filename='banners/' ~ b) }}" class="d-block w-100" alt="banner">
